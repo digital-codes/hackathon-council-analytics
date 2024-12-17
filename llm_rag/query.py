@@ -23,8 +23,8 @@ class RAG_LLM:
 
         self.embed_name = "dunzhang/stella_en_1.5B_v5"
         self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        # index_dir = "../CouncilEmbeddings/vectorstore_index_chunked"
-        index_dir = "../preprocessing/vectorstore_index"
+        index_dir = "../CouncilEmbeddings/vectorstore_index"
+        # index_dir = "../preprocessing/vectorstore_index"
 
         self.embed_model = self.init_embedding_model(self.embed_name)
         tokenizer, self.llm_model = self.init_llm_model(llm_name=self.llm_name, token=token)
