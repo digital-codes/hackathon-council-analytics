@@ -92,7 +92,7 @@ if __name__ == "__main__":
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
     # Load only new documents
-    new_documents = load_txt_files(directory="../CouncilDocuments", processed_filenames=document_metadata.keys())
+    new_documents = load_txt_files(directory="CouncilDocuments", processed_filenames=document_metadata.keys())
 
     if new_documents:
         # Configure text splitter for chunking

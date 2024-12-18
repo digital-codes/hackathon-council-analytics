@@ -62,7 +62,7 @@ if __name__ == "__main__":
     vector_store, document_metadata = initFAISSIndex(embedding_model)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     # documents = load_txt_files_from_nextcloud(start_idx=200010, end_idx=200020)
-    documents = load_txt_files(directory="../CouncilDocuments")
+    documents = load_txt_files(directory="CouncilDocuments")
 
     Settings.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
     index = VectorStoreIndex.from_documents(
