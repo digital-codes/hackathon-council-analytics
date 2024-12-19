@@ -26,4 +26,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ChrisBtt/council-analytics:latest
+          tags: chrisbtt/council-analytics:latest
