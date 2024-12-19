@@ -6,7 +6,12 @@ st.title("Council Agenda Analytics Chatbot")
 st.header("Ask anything!")
 user_input = st.text_input("Enter your question:")
 
-rag_llm = RAG_LLM()
+@st.cache_resource
+def load_rag_llm():
+    rag_llm = RAG_LLM()
+    return rag_llm
+
+rag_llm = load_rag_llm()
 
 if st.button("Get Response"):
     if user_input:
