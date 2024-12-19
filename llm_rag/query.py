@@ -144,7 +144,9 @@ class RAG_LLM:
 
     def query_rag_llm(self, user_query):
         # Function to interact with the query engine and return a response
-        response = self.query_engine.query(user_query)
+        with torch.no_grad():
+            response = self.query_engine.query(user_query)
+        torch.cuda.empty_cache()
         return str(response)
 
 
