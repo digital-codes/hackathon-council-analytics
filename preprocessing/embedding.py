@@ -74,7 +74,6 @@ if __name__ == "__main__":
     )    
     
     storage_dir = "vectorstore_index"
-    faiss.write_index(vector_store._faiss_index, os.path.join(storage_dir, "faiss_index.idx"))
     index.storage_context.persist(persist_dir=storage_dir) # save the index
     metadata_path = os.path.join(storage_dir, "document_metadata.pkl")
     with open(metadata_path, "wb") as f:
