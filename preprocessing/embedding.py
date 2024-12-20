@@ -10,7 +10,7 @@ import os
 from tqdm import tqdm
 import multiprocessing
 
-from preprocessing import upload_to_nextcloud, download_from_nextcloud
+from preprocessing.preprocessing import upload_to_nextcloud, download_from_nextcloud
 
 
 def load_txt_files(directory):
@@ -64,7 +64,7 @@ def initVectorStore(embedding_model):
 def initialize_embedding_model():
     model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_model = HuggingFaceEmbedding(model_name=model_name)
-    print("Embedding model'sentence-transformers/all-MiniLM-L6-v2' initialized.")
+    print(f"Embedding model '{model_name}' initialized.")
     return embedding_model
 
 
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     vector_store = initVectorStore(embedding_model)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     # documents = load_txt_files_from_nextcloud(start_idx=200010, end_idx=200020)
-    documents = load_txt_files(directory="../CouncilDocuments")
+    documents = load_txt_files(directory="../CouncilTexts")
 
     Settings.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
     index = VectorStoreIndex.from_documents(
@@ -87,7 +87,10 @@ if __name__ == "__main__":
     # index = VectorStoreIndex.from_documents(documents, storage_context=storage_context, embed_model=embedding_model, show_progress=True) # load documents into the index using the vector store
     
     storage_dir = "vectorstore_index"
-    faiss.write_index(vector_store._faiss_index, os.path.join(storage_dir, "faiss_index.idx"))
+    index_file = os.path.join(storage_dir, "faiss_index.idx")
+    os.makedirs(storage_dir, exist_ok=True)
+
+    faiss.write_index(vector_store._faiss_index, index_file)
     index.storage_context.persist(persist_dir=storage_dir) # save the index
 
     print(f"Vectors in FAISS index: {vector_store._faiss_index.ntotal}")

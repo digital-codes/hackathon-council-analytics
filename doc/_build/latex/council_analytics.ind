@@ -1,0 +1,90 @@
+\begin{sphinxtheindex}
+\let\bigletter\sphinxstyleindexlettergroup
+\let\spxpagem \sphinxstyleindexpagemain
+\let\spxentry \sphinxstyleindexentry
+\let\spxextra \sphinxstyleindexextra
+
+  \bigletter C
+  \item \spxentry{configure\_query\_engine()}\spxextra{llm\_rag.query.RAG\_LLM method}, 
+		\hyperpage{3}
+
+  \indexspace
+  \bigletter D
+  \item \spxentry{display\_prompt\_dict()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+  \item \spxentry{download\_from\_nextcloud()}\spxextra{in module preprocessing.preprocessing}, 
+		\hyperpage{5}
+  \item \spxentry{download\_pdf()}\spxextra{in module preprocessing.download}, \hyperpage{5}
+
+  \indexspace
+  \bigletter E
+  \item \spxentry{extract\_text()}\spxextra{in module preprocessing.extractor}, \hyperpage{5}
+
+  \indexspace
+  \bigletter H
+  \item \spxentry{huggingface\_login()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+
+  \indexspace
+  \bigletter I
+  \item \spxentry{init\_embedding\_model()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+  \item \spxentry{init\_llm\_model()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+  \item \spxentry{initialize\_embedding\_model()}\spxextra{in module preprocessing.embedding}, 
+		\hyperpage{5}
+  \item \spxentry{initVectorStore()}\spxextra{in module preprocessing.embedding}, \hyperpage{5}
+
+  \indexspace
+  \bigletter L
+  \item \spxentry{llm\_rag}
+    \subitem \spxentry{module}, \hyperpage{3}
+  \item \spxentry{llm\_rag.query}
+    \subitem \spxentry{module}, \hyperpage{3}
+  \item \spxentry{load\_index\_storage()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+  \item \spxentry{load\_txt\_files()}\spxextra{in module preprocessing.embedding}, \hyperpage{5}
+  \item \spxentry{load\_txt\_files\_nextcloud()}\spxextra{in module preprocessing.embedding}, 
+		\hyperpage{5}
+
+  \indexspace
+  \bigletter M
+  \item \spxentry{module}
+    \subitem \spxentry{llm\_rag}, \hyperpage{3}
+    \subitem \spxentry{llm\_rag.query}, \hyperpage{3}
+    \subitem \spxentry{preprocessing}, \hyperpage{6}
+    \subitem \spxentry{preprocessing.download}, \hyperpage{5}
+    \subitem \spxentry{preprocessing.embedding}, \hyperpage{5}
+    \subitem \spxentry{preprocessing.extractor}, \hyperpage{5}
+    \subitem \spxentry{preprocessing.preprocessing}, \hyperpage{5}
+
+  \indexspace
+  \bigletter P
+  \item \spxentry{parallel\_process\_pdf()}\spxextra{in module preprocessing.preprocessing}, 
+		\hyperpage{5}
+  \item \spxentry{preprocessing}
+    \subitem \spxentry{module}, \hyperpage{6}
+  \item \spxentry{preprocessing.download}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{preprocessing.embedding}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{preprocessing.extractor}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{preprocessing.preprocessing}
+    \subitem \spxentry{module}, \hyperpage{5}
+  \item \spxentry{process\_pdf()}\spxextra{in module preprocessing.preprocessing}, \hyperpage{5}
+
+  \indexspace
+  \bigletter Q
+  \item \spxentry{query\_rag\_llm()}\spxextra{llm\_rag.query.RAG\_LLM method}, \hyperpage{3}
+
+  \indexspace
+  \bigletter R
+  \item \spxentry{RAG\_LLM}\spxextra{class in llm\_rag.query}, \hyperpage{3}
+  \item \spxentry{request\_pdf()}\spxextra{in module preprocessing.download}, \hyperpage{5}
+
+  \indexspace
+  \bigletter S
+  \item \spxentry{save\_text()}\spxextra{in module preprocessing.extractor}, \hyperpage{5}
+
+  \indexspace
+  \bigletter U
+  \item \spxentry{upload\_to\_nextcloud()}\spxextra{in module preprocessing.preprocessing}, 
+		\hyperpage{5}
+
+\end{sphinxtheindex}

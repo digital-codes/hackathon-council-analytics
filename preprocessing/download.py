@@ -13,7 +13,7 @@ def download_pdf(idx, verbose=False):
         return True
     else:
         return False
-    
+
 
 def request_pdf(idx, verbose=False):
     """

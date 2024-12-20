@@ -5,8 +5,8 @@ from tqdm import tqdm
 import pymupdf
 import multiprocessing
 
-import download
-import extractor
+import preprocessing.download
+import preprocessing.extractor
 
 
 nextcloud_folder = "CouncilDocuments"
