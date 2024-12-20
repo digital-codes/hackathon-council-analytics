@@ -10,7 +10,7 @@ import os
 from tqdm import tqdm
 import multiprocessing
 
-from preprocessing import upload_to_nextcloud, download_from_nextcloud
+from preprocessing.preprocessing import upload_to_nextcloud, download_from_nextcloud
 
 
 def load_txt_files(directory):
@@ -52,7 +52,7 @@ def initFAISSIndex(embedding_model):
 def initialize_embedding_model():
     model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_model = HuggingFaceEmbedding(model_name=model_name)
-    print("Embedding model'sentence-transformers/all-MiniLM-L6-v2' initialized.")
+    print(f"Embedding model '{model_name}' initialized.")
     return embedding_model
 
 
