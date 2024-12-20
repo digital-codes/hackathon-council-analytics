@@ -23,8 +23,8 @@ class RAG_LLM:
 
         self.embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        # index_dir = "../CouncilEmbeddings/vectorstore_index_chunked"
-        index_dir = "../CouncilEmbeddings"
+        index_dir = "CouncilEmbeddings/vectorstore_index"
+        # index_dir = "../preprocessing/vectorstore_index"
 
         self.embed_model = self.init_embedding_model(self.embed_name)
         tokenizer, self.llm_model = self.init_llm_model(llm_name=self.llm_name, token=token)
@@ -145,7 +145,9 @@ class RAG_LLM:
 
     def query_rag_llm(self, user_query):
         # Function to interact with the query engine and return a response
-        response = self.query_engine.query(user_query)
+        with torch.no_grad():
+            response = self.query_engine.query(user_query)
+        torch.cuda.empty_cache()
         return str(response)
 
 

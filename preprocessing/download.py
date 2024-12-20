@@ -4,11 +4,11 @@ from tqdm import tqdm
 from requests.auth import HTTPBasicAuth
 
 
-def download_pdf(idx, verbose=False):
+def download_pdf(folder, idx, verbose=False):
     content = request_pdf(idx, verbose=verbose)
     if content is not None:
         filename = f'{i}.pdf'
-        with open(os.path.join("../CouncilDocuments", filename), 'wb') as f:
+        with open(os.path.join(folder, filename), 'wb') as f:
             f.write(content)
         return True
     else:
@@ -37,7 +37,7 @@ def request_pdf(idx, verbose=False):
 
 if __name__ == '__main__':
 
-    folder = "../CouncilDocuments"
+    folder = "CouncilDocuments"
     files = [f.strip('.pdf') for f in os.listdir(folder) if f.endswith('.pdf')]
 
     n = 0
