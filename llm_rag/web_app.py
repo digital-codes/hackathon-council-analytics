@@ -1,5 +1,5 @@
 import streamlit as st
-from query import RAG_LLM
+from llm_rag.query import RAG_LLM
 
 
 st.title("Council Agenda Analytics Chatbot")

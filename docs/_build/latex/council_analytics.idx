@@ -1,0 +1,34 @@
+\indexentry{module@\spxentry{module}!llm\_rag.query@\spxentry{llm\_rag.query}|hyperpage}{3}
+\indexentry{llm\_rag.query@\spxentry{llm\_rag.query}!module@\spxentry{module}|hyperpage}{3}
+\indexentry{RAG\_LLM (class in llm\_rag.query)@\spxentry{RAG\_LLM}\spxextra{class in llm\_rag.query}|hyperpage}{3}
+\indexentry{configure\_query\_engine() (llm\_rag.query.RAG\_LLM method)@\spxentry{configure\_query\_engine()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{display\_prompt\_dict() (llm\_rag.query.RAG\_LLM method)@\spxentry{display\_prompt\_dict()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{huggingface\_login() (llm\_rag.query.RAG\_LLM method)@\spxentry{huggingface\_login()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{init\_embedding\_model() (llm\_rag.query.RAG\_LLM method)@\spxentry{init\_embedding\_model()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{init\_llm\_model() (llm\_rag.query.RAG\_LLM method)@\spxentry{init\_llm\_model()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{load\_index\_storage() (llm\_rag.query.RAG\_LLM method)@\spxentry{load\_index\_storage()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{query\_rag\_llm() (llm\_rag.query.RAG\_LLM method)@\spxentry{query\_rag\_llm()}\spxextra{llm\_rag.query.RAG\_LLM method}|hyperpage}{3}
+\indexentry{module@\spxentry{module}!llm\_rag@\spxentry{llm\_rag}|hyperpage}{3}
+\indexentry{llm\_rag@\spxentry{llm\_rag}!module@\spxentry{module}|hyperpage}{3}
+\indexentry{module@\spxentry{module}!preprocessing.download@\spxentry{preprocessing.download}|hyperpage}{5}
+\indexentry{preprocessing.download@\spxentry{preprocessing.download}!module@\spxentry{module}|hyperpage}{5}
+\indexentry{download\_pdf() (in module preprocessing.download)@\spxentry{download\_pdf()}\spxextra{in module preprocessing.download}|hyperpage}{5}
+\indexentry{request\_pdf() (in module preprocessing.download)@\spxentry{request\_pdf()}\spxextra{in module preprocessing.download}|hyperpage}{5}
+\indexentry{module@\spxentry{module}!preprocessing.embedding@\spxentry{preprocessing.embedding}|hyperpage}{5}
+\indexentry{preprocessing.embedding@\spxentry{preprocessing.embedding}!module@\spxentry{module}|hyperpage}{5}
+\indexentry{initVectorStore() (in module preprocessing.embedding)@\spxentry{initVectorStore()}\spxextra{in module preprocessing.embedding}|hyperpage}{5}
+\indexentry{initialize\_embedding\_model() (in module preprocessing.embedding)@\spxentry{initialize\_embedding\_model()}\spxextra{in module preprocessing.embedding}|hyperpage}{5}
+\indexentry{load\_txt\_files() (in module preprocessing.embedding)@\spxentry{load\_txt\_files()}\spxextra{in module preprocessing.embedding}|hyperpage}{5}
+\indexentry{load\_txt\_files\_nextcloud() (in module preprocessing.embedding)@\spxentry{load\_txt\_files\_nextcloud()}\spxextra{in module preprocessing.embedding}|hyperpage}{5}
+\indexentry{module@\spxentry{module}!preprocessing.extractor@\spxentry{preprocessing.extractor}|hyperpage}{5}
+\indexentry{preprocessing.extractor@\spxentry{preprocessing.extractor}!module@\spxentry{module}|hyperpage}{5}
+\indexentry{extract\_text() (in module preprocessing.extractor)@\spxentry{extract\_text()}\spxextra{in module preprocessing.extractor}|hyperpage}{5}
+\indexentry{save\_text() (in module preprocessing.extractor)@\spxentry{save\_text()}\spxextra{in module preprocessing.extractor}|hyperpage}{5}
+\indexentry{module@\spxentry{module}!preprocessing.preprocessing@\spxentry{preprocessing.preprocessing}|hyperpage}{5}
+\indexentry{preprocessing.preprocessing@\spxentry{preprocessing.preprocessing}!module@\spxentry{module}|hyperpage}{5}
+\indexentry{download\_from\_nextcloud() (in module preprocessing.preprocessing)@\spxentry{download\_from\_nextcloud()}\spxextra{in module preprocessing.preprocessing}|hyperpage}{5}
+\indexentry{parallel\_process\_pdf() (in module preprocessing.preprocessing)@\spxentry{parallel\_process\_pdf()}\spxextra{in module preprocessing.preprocessing}|hyperpage}{5}
+\indexentry{process\_pdf() (in module preprocessing.preprocessing)@\spxentry{process\_pdf()}\spxextra{in module preprocessing.preprocessing}|hyperpage}{5}
+\indexentry{upload\_to\_nextcloud() (in module preprocessing.preprocessing)@\spxentry{upload\_to\_nextcloud()}\spxextra{in module preprocessing.preprocessing}|hyperpage}{5}
+\indexentry{module@\spxentry{module}!preprocessing@\spxentry{preprocessing}|hyperpage}{6}
+\indexentry{preprocessing@\spxentry{preprocessing}!module@\spxentry{module}|hyperpage}{6}

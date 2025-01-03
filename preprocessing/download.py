@@ -16,7 +16,7 @@ def download_pdf(folder, idx, verbose=False):
     except Exception as e:
         print(f"Error for {idx}: {e}")
         return False
-    
+
 
 def request_pdf(idx, verbose=False):
     """

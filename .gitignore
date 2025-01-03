@@ -3,6 +3,8 @@
 
 CouncilDocuments/
 CouncilEmbeddings/
+CouncilTexts/
+
 */*.pkl
 */*.json
 

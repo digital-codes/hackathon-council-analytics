@@ -21,9 +21,9 @@ class RAG_LLM:
         token = "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"
         self.huggingface_login()
 
-        self.embed_name = "dunzhang/stella_en_1.5B_v5"
+        self.embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        index_dir = "CouncilEmbeddings/vectorstore_index"
+        index_dir = "CouncilEmbeddings/"
         # index_dir = "../preprocessing/vectorstore_index"
 
         self.embed_model = self.init_embedding_model(self.embed_name)
@@ -59,6 +59,7 @@ class RAG_LLM:
         system_prompt = """Du bist ein intelligentes System, das deutsche Dokumente durchsucht und auf Basis der enthaltenen Informationen präzise Antworten auf gestellte Fragen gibt. Wenn du eine Antwort formulierst, gib die Antwort in klaren und präzisen Sätzen an und nenne dabei mindestens eine oder mehrere relevante Quellen im Format: (Quelle: Dokumentname, Abschnitt/Seite, Filename des TXT)."""
         # This will wrap the default prompts that are internal to llama-index
         query_wrapper_prompt = PromptTemplate("<|USER|>{query_str}<|ASSISTANT|>")
+        quantization_config = BitsAndBytesConfig(load_in_8bit=True)
 
         model = HuggingFaceLLM(
             context_window=4096,
@@ -67,7 +68,7 @@ class RAG_LLM:
             model_kwargs={
                 "token": token,
                 "torch_dtype": torch.bfloat16,  # comment this line and uncomment below to use 4bit
-                "quantization_config": BitsAndBytesConfig(load_in_8bit=True)
+                "quantization_config": quantization_config,
             },
             device_map="cuda",
             generate_kwargs={
@@ -93,11 +94,11 @@ class RAG_LLM:
 
     def load_index_storage(self, index_dir):
 
-        faiss_index = faiss.read_index(os.path.join(index_dir, "faiss_index.idx"))
-        faiss_store = FaissVectorStore(faiss_index=faiss_index)
+        faiss_store = FaissVectorStore.from_persist_dir(index_dir)
         storage_context = StorageContext.from_defaults(vector_store=faiss_store, persist_dir=index_dir)
+        # storage_context = StorageContext.from_defaults(persist_dir=index_dir)
         index = load_index_from_storage(storage_context)
-        print(f"Number of vectors stored: {faiss_index.ntotal}")
+        print(f"Number of vectors stored: {faiss_store._faiss_index.ntotal}")
         print(f"Number of nodes in index: {len(index.ref_doc_info)}")
 
         return index

@@ -52,7 +52,7 @@ def initFAISSIndex(embedding_model):
 def initialize_embedding_model():
     model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
     embedding_model = HuggingFaceEmbedding(model_name=model_name)
-    print("Embedding model'sentence-transformers/all-MiniLM-L6-v2' initialized.")
+    print(f"Embedding model '{model_name}' initialized.")
     return embedding_model
 
 
@@ -62,7 +62,7 @@ if __name__ == "__main__":
     vector_store, document_metadata = initFAISSIndex(embedding_model)
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     # documents = load_txt_files_from_nextcloud(start_idx=200010, end_idx=200020)
-    documents = load_txt_files(directory="CouncilDocuments")
+    documents = load_txt_files(directory="CouncilTexts/")
 
     Settings.text_splitter = SentenceSplitter(chunk_size=1024, chunk_overlap=20)
     index = VectorStoreIndex.from_documents(
@@ -73,12 +73,12 @@ if __name__ == "__main__":
         show_progress=True,
     )    
     
-    storage_dir = "vectorstore_index"
-    index.storage_context.persist(persist_dir=storage_dir) # save the index
-    
-    metadata_path = os.path.join(storage_dir, "document_metadata.pkl")
-    with open(metadata_path, "wb") as f:
-        pickle.dump(document_metadata, f)
+    storage_dir = "CouncilEmbeddings/"
+    index.storage_context.persist(persist_dir=storage_dir) # save the data
+    # faiss.write_index(vector_store._faiss_index, os.path.join(storage_dir, "faiss_index.idx")) # save the index
+    # metadata_path = os.path.join(storage_dir, "document_metadata.pkl")
+    # with open(metadata_path, "wb") as f:
+    #     pickle.dump(document_metadata, f)
 
     print(f"Vectors in FAISS index: {vector_store._faiss_index.ntotal}")
     print(f"Documents in Vector Store Index: {len(index.ref_doc_info)}")
