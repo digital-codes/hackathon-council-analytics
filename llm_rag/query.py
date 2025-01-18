@@ -23,7 +23,7 @@ class RAG_LLM:
 
         self.embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        index_dir = "CouncilEmbeddings/vectorstore_index"
+        index_dir = "CouncilEmbeddings/"
         # index_dir = "../preprocessing/vectorstore_index"
 
         self.embed_model = self.init_embedding_model(self.embed_name)
@@ -70,7 +70,7 @@ class RAG_LLM:
                 "torch_dtype": torch.bfloat16,  # comment this line and uncomment below to use 4bit
                 "quantization_config": quantization_config,
             },
-            device_map="mps",
+            device_map="cuda",
             generate_kwargs={
                 "do_sample": True, 
                 "temperature": 0.3,
@@ -94,11 +94,11 @@ class RAG_LLM:
 
     def load_index_storage(self, index_dir):
 
-        faiss_index = faiss.read_index(os.path.join(index_dir, "faiss_index.idx"))
-        faiss_store = FaissVectorStore(faiss_index=faiss_index)
+        faiss_store = FaissVectorStore.from_persist_dir(index_dir)
         storage_context = StorageContext.from_defaults(vector_store=faiss_store, persist_dir=index_dir)
+        # storage_context = StorageContext.from_defaults(persist_dir=index_dir)
         index = load_index_from_storage(storage_context)
-        print(f"Number of vectors stored: {faiss_index.ntotal}")
+        print(f"Number of vectors stored: {faiss_store._faiss_index.ntotal}")
         print(f"Number of nodes in index: {len(index.ref_doc_info)}")
 
         return index
