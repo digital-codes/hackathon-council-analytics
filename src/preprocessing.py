@@ -4,15 +4,17 @@ from requests.auth import HTTPBasicAuth
 from tqdm import tqdm
 import pymupdf
 import multiprocessing
-
+import tomllib
 import download
 import extractor
 
 
-nextcloud_folder = "CouncilDocuments"
-nextcloud_user = "TeamAgenda"
-nextcloud_password = "TeamAgenda@2024"
-nextcloud_url = f"https://nc-1578619932403564675.nextcloud-ionos.com/remote.php/dav/files/{nextcloud_user}"
+with open("config.toml", "rb") as f:
+    config = tomllib.load(f)
+nextcloud_folder = config[nextcloud][folder]
+nextcloud_user = config[nextcloud][user]
+nextcloud_password = config[nextcloud][password]
+nextcloud_url = os.path.join(config[nextcloud][url]),(nextcloud_user)
 
 
 def download_from_nextcloud(folder, filename):
