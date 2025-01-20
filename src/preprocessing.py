@@ -8,13 +8,21 @@ import tomllib
 import download
 import extractor
 
-
-with open("config.toml", "rb") as f:
-    config = tomllib.load(f)
-nextcloud_folder = config[nextcloud][folder]
-nextcloud_user = config[nextcloud][user]
-nextcloud_password = config[nextcloud][password]
-nextcloud_url = os.path.join(config[nextcloud][url]),(nextcloud_user)
+try:
+	with open("config.toml", "rb") as f:
+		config = tomllib.load(f)
+except FileNotFoundError:
+	print("********\n"
+		  "Warning: You should copy the sample config file to config.toml and edit it\n"
+		  "using the sample file for now\n"
+  		  "*******")
+	with open("config_sample.toml", "rb") as f:
+		config = tomllib.load(f)
+    	
+nextcloud_folder = config['nextcloud']['folder']
+nextcloud_user = config['nextcloud']['user']
+nextcloud_password = config['nextcloud']['password']
+nextcloud_url = os.path.join(config['nextcloud']['url'],nextcloud_user)
 
 
 def download_from_nextcloud(folder, filename):
@@ -101,10 +109,7 @@ def parallel_process_pdf(args):
 
 
 if __name__ == "__main__":
-
-    args_list = [(i, False) for i in range(200000, 200020)]
-
-    with multiprocessing.Pool(processes=1) as p:
-        results = list(tqdm(p.imap(parallel_process_pdf, args_list), total=len(args_list)))
-    
-    print("Process completed.")
+	args_list = [(i, False) for i in range(200000, 200020)]
+	with multiprocessing.Pool(processes=1) as p:
+	    results = list(tqdm(p.imap(parallel_process_pdf, args_list), total=len(args_list)))
+	print("Process completed.")
