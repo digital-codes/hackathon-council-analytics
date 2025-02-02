@@ -19,26 +19,26 @@ class RAG_LLM:
     def __init__(self):
 
         token = "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"
-        self.huggingface_login()
+        self._huggingface_login()
 
         self.embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
         index_dir = "CouncilEmbeddings/"
         # index_dir = "../preprocessing/vectorstore_index"
 
-        self.embed_model = self.init_embedding_model(self.embed_name)
-        tokenizer, self.llm_model = self.init_llm_model(llm_name=self.llm_name, token=token)
+        self.embed_model = self._init_embedding_model(self.embed_name)
+        tokenizer, self.llm_model = self._init_llm_model(llm_name=self.llm_name, token=token)
 
         Settings.llm = self.llm_model
         # Settings.tokenizer = tokenizer
         Settings.embed_model = self.embed_model
 
-        self.index = self.load_index_storage(index_dir)
-        self.query_engine = self.configure_query_engine(self.index)
-        # display_prompt_dict(prompts_dict)
+        self.index = self._load_index_storage(index_dir)
+        self.query_engine = self._configure_query_engine(self.index)
+        # self._display_prompt_dict(prompts_dict)
 
 
-    def huggingface_login(self):
+    def _huggingface_login(self):
         token = "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"
         # token = os.getenv("HUGGINGFACE_TOKEN")  # Use environment variable for security
         if not token:
@@ -47,7 +47,7 @@ class RAG_LLM:
         print("Logged in successfully!")
 
 
-    def init_llm_model(self, llm_name, token):
+    def _init_llm_model(self, llm_name, token):
         tokenizer = AutoTokenizer.from_pretrained(llm_name, token=token)
         stopping_ids = [
             tokenizer.eos_token_id,
@@ -86,13 +86,13 @@ class RAG_LLM:
         return tokenizer, model
 
 
-    def init_embedding_model(self, embed_name):
+    def _init_embedding_model(self, embed_name):
         embedding_model = HuggingFaceEmbedding(model_name=embed_name)
         print(f"Embedding model {embed_name} initialized.")
         return embedding_model
 
 
-    def load_index_storage(self, index_dir):
+    def _load_index_storage(self, index_dir):
 
         faiss_store = FaissVectorStore.from_persist_dir(index_dir)
         storage_context = StorageContext.from_defaults(vector_store=faiss_store, persist_dir=index_dir)
@@ -104,10 +104,10 @@ class RAG_LLM:
         return index
 
 
-    def configure_query_engine(self, index) -> RetrieverQueryEngine:
+    def _configure_query_engine(self, index) -> RetrieverQueryEngine:
         retriever = VectorIndexRetriever(
             index=index,
-            similarity_top_k=2,
+            similarity_top_k=3,
         )
 
         response_synthesizer = get_response_synthesizer(
@@ -136,7 +136,7 @@ class RAG_LLM:
         return query_engine
 
 
-    def display_prompt_dict(self, prompts_dict):
+    def _display_prompt_dict(self, prompts_dict):
         for k, p in prompts_dict.items():
             text_md = f"**Prompt Key**: {k}<br>" f"**Text:** <br>"
             print(text_md)
@@ -149,6 +149,16 @@ class RAG_LLM:
             response = self.query_engine.query(user_query)
         torch.cuda.empty_cache()
         return str(response)
+
+
+    def search_relevant_documents(self, user_query) -> list[str]:
+        """Retrieve relevant documents supporting the user query from the RAG query engine."""
+        
+        retrieved_nodes = self.query_engine.retriever.retrieve(user_query)
+        retrieved_files = [node.metadata for node in retrieved_nodes]
+        retrieved_texts = [node.text for node in retrieved_nodes]
+
+        return retrieved_files, retrieved_texts
 
 
 if __name__ == "__main__":

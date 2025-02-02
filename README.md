@@ -136,6 +136,15 @@ You are welcome to extend the testing environment for a better code and case cov
 
 #### ChatBot evaluation
 
+The *DeepEval* framework is used to access Chatbot metrics and evaluate the Rag LLM pipeline on a given set of questions.
+In order to run the basic *Faithfullness* check, type:
+
+...
+$ python3 src/evaluation.py
+...
+
+The test itself also uses LLM power internally. Thus, calculation might take a while.
+
 ## Community
 
  ### Contribution
