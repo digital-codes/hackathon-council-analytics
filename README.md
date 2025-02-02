@@ -122,6 +122,20 @@ $ pipenv install -r requirements.txt
 |----|-----------|-------------|
 | 1  | run.py    | Entry Point
 
+### Testing
+
+#### Unit tests
+
+A simple unit test is implemented in directory `tests` and can be simply executed with a single command:
+
+```
+$ pytest
+```
+
+You are welcome to extend the testing environment for a better code and case coverage. 
+
+#### ChatBot evaluation
+
 ## Community
 
  ### Contribution
