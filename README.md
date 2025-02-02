@@ -14,7 +14,7 @@ Heidelberg City Council automatic document processing, analyzing and chatbot.
       - [Cloning The GitHub Repository](#cloning-the-github-repository)
       - [Create Virtual Environment - Optional](#create-virtual-environment---optional)
       - [Installing Packages](#installing-packages)
-      - [File Structure](#file-structure)
+      - [Programm Structure](#programm-structure)
   - [Community](#community)
     - [Contribution](#contribution)
     - [Branches](#branches)
@@ -91,36 +91,80 @@ e.g. 2- If you are using virtual environment with pipenv. Please note pipenv wil
 $ pipenv install -r requirements.txt
 ```
 
-#### File Structure
+#### Programm Structure
+```mermaid
+
+classDiagram
+    direction LR
+    
+    web_app -- RAG_LLM
+    embedding --|> preprocessing
+    update    --|> preprocessing
+    extractor  <|-- preprocessing
+    download   <|-- preprocessing
+    
+    class web_app
+    web_app : title
+    web_app : header
+    web_app : query_rag_llm(user_input)
+    
+    class RAG_LLM
+    RAG_LLM : -index_dir
+    RAG_LLM : -token
+    RAG_LLM : -llm_name
+    RAG_LLM : -embed_mame
+    RAG_LLM : -system_prompt
+    RAG_LLM : -summary_prompt
+    RAG_LLM : index
+    RAG_LLM : +query_rag_llm(user_query)
+    RAG_LLM : _configure_query_engine(index)
+    RAG_LLM : _huggingface_login(token)
+    RAG_LLM : _init_llm_model(llm_name, token)
+    RAG_LLM : _init_embedding_model(embed_mame)
+    RAG_LLM : _load_index_storage(index_dir)
+    RAG_LLM : _display_prompt_dict()?
+    
+    class embedding
+    embedding : -directory
+    embedding : -storage_dir
+    embedding : load_txt_files(directory)
+    embedding : _initialize_embedding_model()
+    embedding : _initFAISSIndex(embedding_model)
+    embedding : load_txt_files_nextcloud(start_idx, end_idx)?
+    
+    class update
+    update : storage_dir
+    update : embedding_model
+    update : vector_store
+    update : -directory
+    update : load_existing_index(storage_dir)
+    update : _initialize_embedding_model()
+    update : _init_vector_store(emebedding_model, faiss_index)
+    update : _load_txt_files(directory)
+    update : _save_index_and_metadata(index, metadata, storage_dir)
+    
+    class preprocessing
+    preprocessing : *nextcloud_folder
+    preprocessing : *nextcloud_user
+    preprocessing : *nextcloud_password
+    preprocessing : *nextcloud_url
+    preprocessing : download_from_nextcloud(folder, filename)
+    preprocessing : upload_to_nextcloud(folder, filename, content...)
+    preprocessing : _process_pdf(idx)
+    preprocessing : _parallel_process_pdf(args)
+    
+    class extractor
+    extractor: extract_text(doc) -> text
+    extractor: save_text(text, filename)
+    
+    class download
+    download: -url
+    download: download_pdf(idx)
+    download: _extract_text(doc) -> text
+    download: _save_text(text, filename)
+    download: _request_pdf(idx)
 
 ```
-.
-├── chatbot_model
-│   ├── responses
-│   │   ├── response_1.txt
-│   |   │── response_2.txt
-|   |   └── temp
-│   └── Chatbot.ipynb
-|
-├── CouncilDocuments
-|
-├── llm_rag
-│   └── query.py
-|
-├── preprocessing
-│   ├── download.py
-│   ├── embedding.py
-|   ├── extractor.py
-│   └── preprocessing.py
-├── run.py
-├── README.md
-├── LIESMICH.md
-└── requirements.txt
-```
-
-| No.| File Name | Details 
-|----|-----------|-------------|
-| 1  | run.py    | Entry Point
 
 ## Community
 
