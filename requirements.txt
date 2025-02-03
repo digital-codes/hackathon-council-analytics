@@ -7,5 +7,6 @@ llama-index-embeddings-huggingface>=0.4.0
 llama-index-llms-huggingface>=0.4.1
 llama-index-vector-stores-faiss>=0.3.0
 lm-format-enforcer>=0.10.9
+pymupdf>=1.25.1
 pytest>=8.3.4
 streamlit>=1.41.1

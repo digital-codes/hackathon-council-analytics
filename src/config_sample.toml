@@ -1,0 +1,6 @@
+# https://realpython.com/python-toml/
+[nextcloud]
+folder = "CouncilDocuments"
+user = "TeamAgenda"
+password = "TeamAgenda@2024"
+url = "https://nc-1578619932403564675.nextcloud-ionos.com/remote.php/dav/files/"
