@@ -1,5 +1,7 @@
 import torch
 import json
+import tomllib
+import deepeval
 from deepeval import evaluate
 from deepeval.metrics import FaithfulnessMetric
 from deepeval.test_case import LLMTestCase
@@ -17,34 +19,6 @@ from query import RAG_LLM, huggingface_login
 
 
 class EvalHuggingFaceLLM(DeepEvalBaseLLM):
-    def __init__(self, model, tokenizer):
-        # token = "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"
-        # huggingface_login(token=token)
-
-        self.model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        self.tokenizer = tokenizer
-        self.model = model
-
-    def generate(self, prompt: str) -> str:
-        device = "cpu"
-
-        model_inputs = self.tokenizer([prompt], return_tensors="pt").to(device)
-        self.model.to(device)
-
-        generated_ids = self.model.generate(**model_inputs, max_new_tokens=100, do_sample=True)
-        return self.tokenizer.batch_decode(generated_ids)[0]
-
-    async def a_generate(self, prompt: str) -> str:
-        return self.generate(prompt, schema)
-
-    def load_model(self):
-        return self.model
-
-    def get_model_name(self):  
-        return self.model_name
-
-
-class CustomLlama3_8B(DeepEvalBaseLLM):
     def __init__(self):
         quantization_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -77,7 +51,7 @@ class CustomLlama3_8B(DeepEvalBaseLLM):
             tokenizer=self.tokenizer,
             use_cache=True,
             device_map="auto",
-            max_length=3000,
+            max_new_tokens=500,
             do_sample=True,
             top_k=5,
             num_return_sequences=1,
@@ -91,6 +65,7 @@ class CustomLlama3_8B(DeepEvalBaseLLM):
         )
 
         output_dict = pipeline(prompt, prefix_allowed_tokens_fn=prefix_function)
+        print(output_dict)
         output = output_dict[0]["generated_text"][len(prompt) :]
         json_result = json.loads(output)
 
@@ -103,18 +78,13 @@ class CustomLlama3_8B(DeepEvalBaseLLM):
         return "Llama-3.1 8B"
 
 
-def init_eval_llm(model_name):
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16)
-
-    eval_llm = EvalHuggingFaceLLM(model, tokenizer)
-    return eval_llm
-
-
+# with open("src/config.toml", "rb") as f:
+#     config = tomllib.load(f)
+    	
+# deepeval.login_with_confident_api_key(config["api"]["deepeval_key"])
 
 rag_llm = RAG_LLM()
-eval_llm = CustomLlama3_8B()
-# eval_llm = EvalHuggingFaceLLM(model=rag_llm.llm_model, tokenizer=rag_llm.tokenizer, model_name=rag_llm.llm_name)
+eval_llm = EvalHuggingFaceLLM()
 
 questions = ["Wie viele Unterlagen des Finanzausschusses sind vorhanden und welche sind das?"]
 scores = []
@@ -124,7 +94,10 @@ metric_faithful = FaithfulnessMetric(model=eval_llm)
 for question in questions:
     retrieved_texts = rag_llm.search_relevant_documents(user_query=question)[1]
     generated_answer = rag_llm.query_rag_llm(user_query=question)
-    # print(eval_llm.generate(question))
+
+    print(f"Question: {question}")
+    print(f"Retrieved text: {retrieved_texts}")
+    print(f"Answer: {generated_answer}")
 
     test_case = LLMTestCase(
         input=question,

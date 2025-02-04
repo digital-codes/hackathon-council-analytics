@@ -9,3 +9,5 @@ CouncilTexts/
 */*.json
 
 scrapy/
+
+*/config.toml
