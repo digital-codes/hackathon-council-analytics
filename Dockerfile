@@ -16,4 +16,4 @@ COPY . .
 EXPOSE 8501
 
 # Startbefehl für die Streamlit-App
-CMD ["streamlit", "run", "llm_rag/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
