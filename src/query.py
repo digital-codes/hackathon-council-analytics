@@ -67,7 +67,7 @@ class RAG_LLM:
             model_name=llm_name,
             model_kwargs={
                 "token": token,
-                "torch_dtype": torch.bfloat16,  # comment this line and uncomment below to use 4bit
+                # "torch_dtype": torch.bfloat16,  # comment this line and uncomment below to use 4bit
                 "quantization_config": quantization_config,
             },
             device_map="cuda",
