@@ -65,7 +65,6 @@ class EvalHuggingFaceLLM(DeepEvalBaseLLM):
         )
 
         output_dict = pipeline(prompt, prefix_allowed_tokens_fn=prefix_function)
-        print(output_dict)
         output = output_dict[0]["generated_text"][len(prompt) :]
         json_result = json.loads(output)
 
@@ -76,12 +75,6 @@ class EvalHuggingFaceLLM(DeepEvalBaseLLM):
 
     def get_model_name(self):
         return "Llama-3.1 8B"
-
-
-# with open("src/config.toml", "rb") as f:
-#     config = tomllib.load(f)
-    	
-# deepeval.login_with_confident_api_key(config["api"]["deepeval_key"])
 
 rag_llm = RAG_LLM()
 eval_llm = EvalHuggingFaceLLM()
