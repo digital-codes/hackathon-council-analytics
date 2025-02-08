@@ -4,3 +4,10 @@ folder = "CouncilDocuments"
 user = "TeamAgenda"
 password = "TeamAgenda@2024"
 url = "https://nc-1578619932403564675.nextcloud-ionos.com/remote.php/dav/files/"
+[source]
+url = "https://www.gemeinderat.heidelberg.de/getfile.asp"
+folderPDF = "CouncilDocuments"
+folderTXT = "CouncilTexts"
+[model]
+model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+
