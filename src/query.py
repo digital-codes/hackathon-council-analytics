@@ -12,22 +12,23 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
 from huggingface_hub import login
 from transformers import AutoTokenizer, BitsAndBytesConfig
+import tomllib
 
 
 class RAG_LLM:
 
-    def __init__(self):
+    def __init__(self, llm_name, embed_name, model_dir, index_dir, hf_token):
 
-        token = "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"
-        self.huggingface_login()
+        self.huggingface_login(hf_token)
 
-        self.embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-        self.llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-        index_dir = "CouncilEmbeddings/"
+        self.embed_name = embed_name
+        self.llm_name = llm_name
+        self.model_dir = model_dir
+        index_dir = index_dir
         # index_dir = "../preprocessing/vectorstore_index"
 
         self.embed_model = self.init_embedding_model(self.embed_name)
-        tokenizer, self.llm_model = self.init_llm_model(llm_name=self.llm_name, token=token)
+        tokenizer, self.llm_model = self.init_llm_model(llm_name=self.llm_name, token=hf_token)
 
         Settings.llm = self.llm_model
         # Settings.tokenizer = tokenizer
@@ -35,12 +36,9 @@ class RAG_LLM:
 
         self.index = self.load_index_storage(index_dir)
         self.query_engine = self.configure_query_engine(self.index)
-        # display_prompt_dict(prompts_dict)
 
 
-    def huggingface_login(self):
-        token = "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"
-        # token = os.getenv("HUGGINGFACE_TOKEN")  # Use environment variable for security
+    def huggingface_login(self, token):
         if not token:
             raise ValueError("Please set your Hugging Face token in the HUGGINGFACE_TOKEN environment variable.")
         login(token=token)
@@ -69,6 +67,7 @@ class RAG_LLM:
                 "token": token,
                 # "torch_dtype": torch.bfloat16,  # comment this line and uncomment below to use 4bit
                 "quantization_config": quantization_config,
+                "cache_dir": self.model_dir,
             },
             device_map="cuda",
             generate_kwargs={
@@ -79,7 +78,10 @@ class RAG_LLM:
             system_prompt=system_prompt,
             query_wrapper_prompt=query_wrapper_prompt,
             tokenizer_name=llm_name,
-            tokenizer_kwargs={"token": token},
+            tokenizer_kwargs={
+                "token": token,
+                "cache_dir": self.model_dir,
+            },
             stopping_ids=stopping_ids,
         )
 
@@ -153,7 +155,24 @@ class RAG_LLM:
 
 if __name__ == "__main__":
 
-    rag_llm = RAG_LLM()
+    try:
+        with open("src/config.toml", "rb") as f:
+            config = tomllib.load(f)
+    except FileNotFoundError:
+        print("********\n"
+            "Warning: You should copy the sample config file to config.toml and edit it\n"
+            "using the sample file for now\n"
+            "*******")
+        with open("config_sample.toml", "rb") as f:
+            config = tomllib.load(f)
+            
+    llm_name = config['model']['llm_name']
+    embed_name = config['model']['embed_name']
+    model_dir = config['model']['model_dir']
+    index_dir = config['source']['folderEmbeddings']
+    token = config['api']['hf_key']
+
+    rag_llm = RAG_LLM(llm_name=llm_name, embed_name=embed_name, model_dir=model_dir, index_dir=index_dir, hf_token=token)
 
     query = "Wie viele Unterlagen des Finanzausschusses sind vorhanden und welche sind das?"
     response = rag_llm.query_rag_llm(query)
