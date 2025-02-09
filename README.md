@@ -31,7 +31,7 @@ For a simple setup of the open-source RAG-LLM, a Docker image is available on Do
 
 ```
 $ ~ > docker pull chrisbtt/council-analytics:latest
-$ ~ > docker run -v <path/to/vectorDB>s:/app/CouncilEmbeddings -p 8501:8501 --gpus all chrisbtt/council-analytics:latest
+$ ~ > docker run -d -v <path/to/vectorDB>s:/app/CouncilEmbeddings -p 8501:8501 --gpus all chrisbtt/council-analytics:latest
 ```
 
 ## Development
