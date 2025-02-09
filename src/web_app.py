@@ -11,14 +11,14 @@ user_input = st.text_input("Enter your question:")
 def load_rag_llm():
 
     try:
-        with open("config.toml", "rb") as f:
+        with open("src/config.toml", "rb") as f:
             config = tomllib.load(f)
     except FileNotFoundError:
         print("********\n"
             "Warning: You should copy the sample config file to config.toml and edit it\n"
             "using the sample file for now\n"
             "*******")
-        with open("config_sample.toml", "rb") as f:
+        with open("src/config_sample.toml", "rb") as f:
             config = tomllib.load(f)
             
     llm_name = config['model']['llm_name']
