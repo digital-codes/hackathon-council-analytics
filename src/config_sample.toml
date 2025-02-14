@@ -1,4 +1,7 @@
 # https://realpython.com/python-toml/
+[preprocessor]
+filestorage = "nextcloud"
+fileformat = "txt"
 [nextcloud]
 folder = "CouncilDocuments"
 user = "TeamAgenda"
