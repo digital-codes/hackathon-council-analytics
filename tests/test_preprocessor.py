@@ -1,12 +1,12 @@
 import sys
 
-sys.path.append("..")
+sys.path.append("../src")
 
-from src.preprocessor import Preprocessor
+from preprocessor import Preprocessor
 
 
-def test_preprocessor():
-    pp = Preprocessor()
+def test_preprocessor(my_config):
+    pp = Preprocessor(my_config)
     assert type(pp).__name__ == 'Preprocessor'
 
 
@@ -30,7 +30,7 @@ def test_request_pdf(my_config):
 
 def test_get_pdf(my_config):
     pp = Preprocessor(my_config)
-    result = pp.get_pdf(367897, verbose=True)
+    result = pp.get_pdf(367896, verbose=True)
     assert result
 
 

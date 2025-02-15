@@ -16,12 +16,15 @@ Classes:
 
 Functions:  
 - 'show_config': show the configuration of the Preprocessor object
+- 'download_pdf': calls request_pdf ot get file from source and stores on FileStorage
+- 'request_pdf': gets content from source, checks for application type pdf
+- 'get_pdf': Try to get pdf from storage, else call download
 - 'process_pdf': process a file
 
 Example usage:
 
     >>> import preprocessoor
-    >>> pp = preprocessor(configfile)
+    >>> pp = preprocessor(config)
     >>> pp.show_config()
     Key: Value:
     filestore: nextcloud
@@ -29,10 +32,11 @@ Example usage:
     
     
 """
-
+#TODO: make messages clearer
 
 # Defaults
 filestorage = 'nextcloud'
+source_url = 'https://www.gemeinderat.heidelberg.de/getfile.asp'
 
 
 class Preprocessor:
@@ -43,12 +47,13 @@ class Preprocessor:
     def __init__(self, config: dict) -> None:
         """
         Constructs all the necessary attributes for the Preprocessor object.
-        params: configfile: the configfile to read the configuration from
+        params: config: the configuration dict
 
         """
         self.config = config
+        self.source_url = config.get('source',{}).get('url') or source_url
         _filestorage = config.get('preprocessor',{}).get('filestorage') or filestorage
-        fsm = import_module(f"src.storage.{_filestorage}")
+        fsm = import_module(f"storage.{_filestorage}")
         self.fs = fsm.FileStorage(config=config)
 
     def show_config(self) -> str:
@@ -62,7 +67,9 @@ class Preprocessor:
         Download the PDF from the source.
         """
         #TODO: save on FileStorage could be optional
-        pdf_content = self.request_pdf(idx)
+
+        #breakpoint()
+        pdf_content = self.request_pdf(idx, verbose)
         if pdf_content:
             if verbose:
                 print(f"PDF {idx} downloaded from source.")
@@ -94,7 +101,7 @@ class Preprocessor:
         Process the PDF by downloading from source, uploading to Storage, extracting text, and uploading the text file to Storage.
         """
 
-        pdf_content = self.download_pdf(idx)
+        pdf_content = self.get_pdf(idx, verbose)
 
         if pdf_content:
             doc = pymupdf.open(stream=pdf_content, filetype="pdf")  # Extract text from the downloaded PDF
@@ -103,11 +110,11 @@ class Preprocessor:
             self.fs.put_on_storage(text_filename, text, content_type="text")
 
             if verbose:
-                print(f"Text extracted and saved for {filename} as {text_filename}")
+                print(f"Text extracted and saved as {text_filename}")
             return True
         else:
             if verbose:
-                print(f"Skipping text extraction for {idx} due to upload failure.")
+                print(f"Skipping text extraction for {idx} ")
             return False
 
 
@@ -116,9 +123,12 @@ class Preprocessor:
         Request the PDF file from the municipal council website.
         Returns the content of the file if it's a PDF, otherwise None.
         """
-        url = f"https://www.gemeinderat.heidelberg.de/getfile.asp?id={idx}&type=do"
+        url = f"{self.source_url}?id={idx}&type=do"
         response = requests.get(url, stream=True)
-
+        if response.status_code == 404:
+            if verbose:
+                print(f"no file for {idx}")
+            return None
         content_type = response.headers.get('content-type')
 
         if 'application/pdf' in content_type:
@@ -127,7 +137,7 @@ class Preprocessor:
             return response.content
         else:
             if verbose:
-                print(f"Error: The file retrieved for id {idx} is not a PDF.")
+                print(f"The file retrieved for id {idx} is not a PDF.")
             return None
 
     def extract_text(self, doc):
