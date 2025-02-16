@@ -7,6 +7,7 @@ def my_config(my_configfile):
     configfile = my_configfile
     with open(configfile, "rb") as f:
         config = tomllib.load(f)
+    config['verbose'] = 1
     return config
 
 @pytest.fixture

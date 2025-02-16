@@ -39,6 +39,17 @@ class FileStorage:
             with open(file, readtype) as f:
                 return f.read()
 
+    def load_txt_files(self) -> list:
+        """
+        load all txt files in path
+        returns a list of file path
+        """
+        files = []
+        for filename in os.listdir(self.path):
+            if filename.endswith(".txt"):
+                files.append(os.path.join(self.path, filename))
+        return files
+
 
     def put_on_storage(self,filename,content, content_type="binary") -> bool:
         """

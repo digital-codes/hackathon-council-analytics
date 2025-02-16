@@ -1,12 +1,10 @@
-import os
-import tomllib
 import requests
 import pymupdf
 import pprint
-#from tqdm import tqdm
 from multiprocessing import Pool
 from importlib import import_module
 from typing import Optional
+from utils import vprint
 """
 This Module provides classes for preprocessing
 
@@ -23,8 +21,8 @@ Functions:
 
 Example usage:
 
-    >>> import preprocessoor
-    >>> pp = preprocessor(config)
+    >>> from preprocessor import Preprocessor
+    >>> pp = Preprocessor(config)
     >>> pp.show_config()
     Key: Value:
     filestore: nextcloud
@@ -50,11 +48,11 @@ class Preprocessor:
         params: config: the configuration dict
 
         """
-        self.config = config
+        self.config     = config
         self.source_url = config.get('source',{}).get('url') or source_url
         _filestorage = config.get('preprocessor',{}).get('filestorage') or filestorage
         fsm = import_module(f"storage.{_filestorage}")
-        self.fs = fsm.FileStorage(config=config)
+        self.fs         = fsm.FileStorage(config=config)
 
     def show_config(self) -> str:
         """
@@ -62,17 +60,16 @@ class Preprocessor:
         """
         pprint.pp(self.config)
 
-    def download_pdf(self, idx: int, verbose=False) -> Optional[bytes]:
+    def download_pdf(self, idx: int) -> Optional[bytes]:
         """
         Download the PDF from the source.
         """
         #TODO: save on FileStorage could be optional
 
         #breakpoint()
-        pdf_content = self.request_pdf(idx, verbose)
+        pdf_content = self.request_pdf(idx)
         if pdf_content:
-            if verbose:
-                print(f"PDF {idx} downloaded from source.")
+            vprint(f"PDF {idx} downloaded from source.", self.config)
             filename = f"{idx}.pdf"
             self.fs.put_on_storage(filename,
                                pdf_content,
@@ -81,44 +78,39 @@ class Preprocessor:
         else:
             return None
 
-    def get_pdf(self, idx, verbose=False) -> str:
+    def get_pdf(self, idx) -> str:
         """
         Try to get the PDF from storage, if not available download from source.
         params: idx: the index of the PDF to get
-        verbose: if True, print messages
         returns: the PDF content
         """
         pdf_content = self.fs.get_from_storage(f"{idx}.pdf")
         if not pdf_content:
-            if verbose:
-                print(f"PDF {idx} not found in storage, downloading from source.")
-            pdf_content = self.download_pdf(idx, verbose)
+            vprint(f"PDF {idx} not found in storage, downloading from source.", self.config)
+            pdf_content = self.download_pdf(idx)
         return pdf_content
 
 
-    def process_pdf(self, idx, verbose=False) -> bool:
+    def process_pdf(self, idx) -> bool:
         """
         Process the PDF by downloading from source, uploading to Storage, extracting text, and uploading the text file to Storage.
         """
 
-        pdf_content = self.get_pdf(idx, verbose)
+        pdf_content = self.get_pdf(idx)
 
         if pdf_content:
             doc = pymupdf.open(stream=pdf_content, filetype="pdf")  # Extract text from the downloaded PDF
             text = self.extract_text(doc)
             text_filename = f"{idx}.txt"  # Save the extracted text to a local file
             self.fs.put_on_storage(text_filename, text, content_type="text")
-
-            if verbose:
-                print(f"Text extracted and saved as {text_filename}")
+            vprint(f"Text extracted and saved as {text_filename}", self.config)
             return True
         else:
-            if verbose:
-                print(f"Skipping text extraction for {idx} ")
+            vprint(f"Skipping text extraction for {idx} ", self.config)
             return False
 
 
-    def request_pdf(self, idx, verbose=False) -> str:
+    def request_pdf(self, idx) -> str:
         """
         Request the PDF file from the municipal council website.
         Returns the content of the file if it's a PDF, otherwise None.
@@ -126,18 +118,15 @@ class Preprocessor:
         url = f"{self.source_url}?id={idx}&type=do"
         response = requests.get(url, stream=True)
         if response.status_code == 404:
-            if verbose:
-                print(f"no file for {idx}")
+            vprint(f"no file for {idx}", self.config)
             return None
         content_type = response.headers.get('content-type')
 
         if 'application/pdf' in content_type:
-            if verbose:
-                print(f"PDF found for {idx}.")
+            vprint(f"PDF found for {idx}.", self.config)
             return response.content
         else:
-            if verbose:
-                print(f"The file retrieved for id {idx} is not a PDF.")
+            vprint(f"The file retrieved for id {idx} is not a PDF.", self.config)
             return None
 
     def extract_text(self, doc):
