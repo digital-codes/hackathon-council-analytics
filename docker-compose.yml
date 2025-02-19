@@ -1,0 +1,9 @@
+services:
+  hca:
+    image: local/hca
+    container_name: hca
+    restart: unless-stopped
+    ports:
+      - 8052:8080
+    volumes:
+      - /home/tom/.config/hca/config.toml:/root/.config/hca/config.toml
