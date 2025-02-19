@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 import os
 import tomllib
@@ -5,7 +6,7 @@ import pprint
 from tqdm import tqdm
 #from multiprocessing import Pool
 from preprocessor import Preprocessor
-#from vectorstore import Embedor
+from vectorstore import Embedor
 from typing import Optional
 from utils import vprint
 
