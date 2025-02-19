@@ -37,3 +37,12 @@ Testing
 Comparable to the model evaluation, the code implementation of the RAG-LLM has to be tested in a dedicated folder *tests/test_\*.py*.
 With ``assert`` statements using the *pytest* library, the code is tested for different edge cases and possible errors.
 This allows for a more robust and reliable implementation of the RAG-LLM because debugging is supported and bugs can be found before deployment.
+
+Documentation
+-------------
+Even though you are already reading this documentation, the underlying concepts are described nevertheless. 
+The documentation of the RAG-LLM is semi automized via the `Sphinx <https://www.sphinx-doc.org/en/master/>`_ library.
+Therefore, *python* code is loaded and explanations are extracted and displayed in the documentation.
+`ìndex.rst`` is the main file for the documentation and includes a list of additional files such as *intro.rst* and *llm_rag.rst*.
+Existing files can be added using the `reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_ syntax and new files can be created manually.
+Code snippets with their arguments, value type and docstrings can be included as objects in a given domain e.g. *python*: ``..py:function:: existing_function_name``.`
