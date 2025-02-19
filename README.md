@@ -174,6 +174,29 @@ classDiagram
 
 ```
 
+### Testing
+
+#### Unit tests
+
+A simple unit test is implemented in directory `tests` and can be simply executed with a single command:
+
+```
+$ pytest
+```
+
+You are welcome to extend the testing environment for a better code and case coverage. 
+
+#### ChatBot evaluation
+
+The *DeepEval* framework is used to access Chatbot metrics and evaluate the Rag LLM pipeline on a given set of questions.
+In order to run the basic *Faithfullness* check, type:
+
+...
+$ python3 src/evaluation.py
+...
+
+The test itself also uses LLM power internally. Thus, calculation might take a while.
+
 ## Community
 
  ### Contribution
