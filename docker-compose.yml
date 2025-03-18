@@ -6,4 +6,4 @@ services:
     ports:
       - 8052:8080
     volumes:
-      - /home/tom/.config/hca/config.toml:/root/.config/hca/config.toml
+      - /root/hackathon-council-analytics/src/config_sample.toml:/root/.config/hca/config.toml
