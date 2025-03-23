@@ -16,6 +16,7 @@ folderTXT = "CouncilTexts"
 folderEmbeddings = "CouncilEmbeddings"
 
 [model]
+filestorage = "local"
 embed_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 llm_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 model_dir = "model"
@@ -23,3 +24,7 @@ model_dir = "model"
 [api]
 hf_key = "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"
 
+[frameworks]
+filestorage = ["nextcloud", "local"]
+embed = ["sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2", ""]
+llm = ["meta-llama/Meta-Llama-3.1-8B-Instruct", ""]

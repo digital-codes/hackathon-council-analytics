@@ -17,7 +17,8 @@ st_history_output = "**Chatbot**"
 st_error_text = "Please enter a question!"
 
 # TODO: set a cmdline argument for configfile
-configfile = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
+# configfile = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
+configfile = os.path.expanduser(os.path.join('~','Programmieren','SASHackathon','src', 'config_sample.toml'))
 
 try:
     with open(configfile, "rb") as f:
@@ -29,8 +30,6 @@ except FileNotFoundError:
 
 
 if config and config.get('streamlit'):
-    # We have a configuration and will override the defaults now
-    # print("found config")
     st_title  = config['streamlit'].get('title') or st_title
     st_header = config['streamlit'].get('header') or st_header
     st_user_input = config['streamlit'].get('user_input') or st_user_input 
@@ -48,31 +47,41 @@ if page == "Konfiguration":
     st.title("Konfiguration")
     
     # Sicherstellen, dass der Abschnitt "preprocessor" existiert
-    if "preprocessor" not in config:
-        config["preprocessor"] = {"filestorage": "nextcloud", "fileformat": "txt"}
+    if "frameworks" not in config:
+        config["frameworks"] = {
+            "filestorage": "local",
+            "embed": config["model"]["embed_name"],
+            "llm": config["model"]["llm_name"]
+        }
     
-    # Optionen für die Dropdown-Menüs
-    filestorage_options = ["nextcloud", "lokal", "s3"]
-    fileformat_options = ["txt", "pdf", "docx"]
+    filestorage_options = config["frameworks"].get("filestorage")
+    print(filestorage_options)
+    embed_options = config["frameworks"].get("embed")
+    llm_options = config["frameworks"].get("llm")
     
-    # Dropdown-Menüs erstellen (Vorauswahl anhand des aktuellen Werts)
     selected_filestorage = st.selectbox(
         "Wähle den Filestorage-Typ",
         filestorage_options,
-        index=filestorage_options.index(config["preprocessor"].get("filestorage", "nextcloud"))
+        index=filestorage_options.index(config["model"]["filestorage"])
+    )  
+
+    selected_embedding = st.selectbox(
+        "Wähle das Embedding-Modell",
+        embed_options,
+        index=embed_options.index(config["model"]["embed_name"])
+    )    
+
+    selected_llm = st.selectbox(
+        "Wähle das LLM-Modell",
+        llm_options,
+        index=llm_options.index(config["model"]["llm_name"])
     )
     
-    selected_fileformat = st.selectbox(
-        "Wähle das Dateiformat",
-        fileformat_options,
-        index=fileformat_options.index(config["preprocessor"].get("fileformat", "txt"))
-    )
+    config["model"]["filestorage"] = selected_filestorage
+    config["model"]["embed_name"] = selected_embedding
+    config["model"]["llm_name"] = selected_llm
     
-    # Aktualisiere die Konfiguration im Speicher
-    config["preprocessor"]["filestorage"] = selected_filestorage
-    config["preprocessor"]["fileformat"] = selected_fileformat
-    
-    st.write("Aktuelle Preprocessor-Konfiguration:", config["preprocessor"])
+    st.write("Aktuelle Modell-Konfiguration:", config["model"])
     
     # Button zum Speichern der aktualisierten Konfiguration
     if st.button("Konfiguration speichern"):
@@ -93,7 +102,7 @@ if page == "chat":
     def load_rag_llm():
         return RAG_LLM(configfile)
 
-    rag_llm = load_rag_llm()
+    # rag_llm = load_rag_llm()
 
     if st.button(st_get_response):
         if user_input:
