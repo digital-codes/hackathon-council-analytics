@@ -2,9 +2,10 @@ import streamlit as st
 import tomllib
 import os
 from query import RAG_LLM
+import toml
 import tomllib
 
-# Define Defaults
+
 config = None
 st_title = "Council Agenda Analytics Chatbot"
 st_header = "Ask anything!"
@@ -46,7 +47,6 @@ page = st.sidebar.radio("Seite auswählen", ["Chat", "Konfiguration"])
 if page == "Konfiguration":
     st.title("Konfiguration")
     
-    # Sicherstellen, dass der Abschnitt "preprocessor" existiert
     if "frameworks" not in config:
         config["frameworks"] = {
             "filestorage": "local",
@@ -83,13 +83,11 @@ if page == "Konfiguration":
     
     st.write("Aktuelle Modell-Konfiguration:", config["model"])
     
-    # Button zum Speichern der aktualisierten Konfiguration
     if st.button("Konfiguration speichern"):
         with open(configfile, "w") as f:
             toml.dump(config, f)
         st.success("Konfiguration wurde aktualisiert!")
     
-    # Bei der Konfigurationsseite soll der Chat-Code nicht weiter ausgeführt werden
     st.stop()
 
 
@@ -108,11 +106,9 @@ if page == "chat":
         if user_input:
             response = "test" # rag_llm.query_rag_llm(user_input)
 
-            # Display the response
             st.markdown(st_chbt_response)
             st.success(response)
 
-            # Optionally, you can show chat history
             st.markdown(st_chbt_history)
             st.markdown(f"{st_history_input}: {user_input}")
             st.markdown(f"{st_history_output}: {response}")
