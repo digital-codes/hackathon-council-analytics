@@ -15,11 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Den gesamten Code ins Arbeitsverzeichnis kopieren
 COPY src .
 RUN mkdir -p ~/.config/hca
-COPY src/config_sample.toml ~/.config/hca/config.toml
 
 # Port für Streamlit freigeben
-EXPOSE 8080
-
+EXPOSE 8501
 
 # Startbefehl für die Streamlit-App
-CMD ["streamlit", "run", "web_app.py", "--server.port=8080", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
