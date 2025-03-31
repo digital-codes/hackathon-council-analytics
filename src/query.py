@@ -38,6 +38,7 @@ class RAG_LLM:
         #is this correct for all models, or do we need to elaborate for local models
             
         self.llm_name = config.get('model',{}).get('llm_name') or llm_name
+        self.embed_name = config.get('model',{}).get('embed_name') or llm_name
         self.model_name = config.get('model',{}).get('model_name') or model_name
         self.model_dir = config.get('model',{}).get('model_dir') or model_dir
         self.index_dir = config.get('source',{}).get('folderEmbeddings') or index_dir
