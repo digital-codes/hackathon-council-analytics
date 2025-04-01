@@ -71,7 +71,6 @@ Question: {{ query }}
 Answer:
 """
 
-
 [streamlit]
 title = "Council Agenda Analytics Chatbot"
 header = "Ask anything!"
@@ -82,3 +81,8 @@ chbt_history = "### Chat History:"
 history_input  = "**You**"
 history_output = "**Chatbot**"
 error_text = "Please enter a question!"
+
+[frameworks]
+filestorage = [ "nextcloud", "local",]
+embed = [ "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",]
+llm = [ "meta-llama/Meta-Llama-3.1-8B-Instruct",]

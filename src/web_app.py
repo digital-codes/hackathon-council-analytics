@@ -4,6 +4,7 @@ import sys
 import os
 from ragllm import RagLlm
 import tomllib
+import toml
 
 # Define Defaults
 DOCKER_CONFIGDIR = "/config"
@@ -12,6 +13,7 @@ if len(sys.argv) >= 2:
     configdir = sys.argv[1]
 else:
     configdir = DOCKER_CONFIGDIR
+
 
 config = None
 st_title = "Council Agenda Analytics Chatbot"
@@ -40,8 +42,6 @@ secrets = read_config(os.path.join(configdir, 'secrets.toml'))
 
 
 if config and config.get('streamlit'):
-    # We have a configuration and will override the defaults now
-    # print("found config")
     st_title  = config['streamlit'].get('title') or st_title
     st_header = config['streamlit'].get('header') or st_header
     st_user_input = config['streamlit'].get('user_input') or st_user_input 
@@ -53,24 +53,72 @@ if config and config.get('streamlit'):
     st_error_text = config['streamlit'].get('error_text') or st_error_text
 
 
-st.title(st_title)
-st.header(st_header)
-user_input = st.text_input(st_user_input)
+page = st.sidebar.radio("Seite auswählen", ["Chat", "Konfiguration"])
+
+if page == "Konfiguration":
+    st.title("Konfiguration")
+    
+    if "frameworks" not in config:
+        config["frameworks"] = {
+            "filestorage": "local",
+            "embed": config["model"]["embed_name"],
+            "llm": config["model"]["llm_name"]
+        }
+    
+    filestorage_options = config["frameworks"].get("filestorage")
+    print(filestorage_options)
+    embed_options = config["frameworks"].get("embed")
+    llm_options = config["frameworks"].get("llm")
+    
+    selected_filestorage = st.selectbox(
+        "Wähle den Filestorage-Typ",
+        filestorage_options,
+        index=filestorage_options.index(config["model"]["filestorage"])
+    )  
+
+    selected_embedding = st.selectbox(
+        "Wähle das Embedding-Modell",
+        embed_options,
+        index=embed_options.index(config["model"]["embed_name"])
+    )    
+
+    selected_llm = st.selectbox(
+        "Wähle das LLM-Modell",
+        llm_options,
+        index=llm_options.index(config["model"]["llm_name"])
+    )
+    
+    config["model"]["filestorage"] = selected_filestorage
+    config["model"]["embed_name"] = selected_embedding
+    config["model"]["llm_name"] = selected_llm
+    
+    st.write("Aktuelle Modell-Konfiguration:", config["model"])
+    
+    if st.button("Konfiguration speichern"):
+        with open(configfile, "w") as f:
+            toml.dump(config, f)
+        st.success("Konfiguration wurde aktualisiert!")
+    
+    st.stop()
 
 
-rag_llm = load_rag_llm(config=config, secrets=secrets)
+if page == "chat":
+    st.title(st_title)
+    st.header(st_header)
+    user_input = st.text_input(st_user_input)
 
-if st.button(st_get_response):
-    if user_input:
-        response = rag_llm.run_query(user_input)
+    rag_llm = load_rag_llm(config=config, secrets=secrets)
 
-        # Display the response
-        st.markdown(st_chbt_response)
-        st.success(response)
+    if st.button(st_get_response):
+        if user_input:
+            response = rag_llm.run_query(user_input)
 
-        # Optionally, you can show chat history
-        st.markdown(st_chbt_history)
-        st.markdown(f"{st_history_input}: {user_input}")
-        st.markdown(f"{st_history_output}: {response}")
-    else:
-        st.error(st_error_text)
+
+            st.markdown(st_chbt_response)
+            st.success(response)
+
+            st.markdown(st_chbt_history)
+            st.markdown(f"{st_history_input}: {user_input}")
+            st.markdown(f"{st_history_output}: {response}")
+        else:
+            st.error(st_error_text)
