@@ -4,6 +4,9 @@ FROM python:3.12-slim
 RUN apt-get update
 RUN apt-get install -y build-essential
 
+# config Verzeichnis
+mkdir /config
+
 # Arbeitsverzeichnis im Container setzen
 WORKDIR /app
 
@@ -14,10 +17,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Den gesamten Code ins Arbeitsverzeichnis kopieren
 COPY src .
-RUN mkdir -p ~/.config/hca
 
 # Port für Streamlit freigeben
 EXPOSE 8501
 
+
 # Startbefehl für die Streamlit-App
-CMD ["streamlit", "run", "web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["streamlit", "run", "src/web_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
