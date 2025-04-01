@@ -63,29 +63,29 @@ def test_get_storage_context(my_config):
 # Class Embedor
 ###############
 
-def test_build_llama_documents(my_config):
-    emb = Embedor(my_config)
+def test_build_llama_documents(my_config, my_secrets):
+    emb = Embedor(config=my_config, secrets=my_secrets)
     documents = emb.fs.get_documents(start_idx=368035, end_idx=368052)
     llama_documents = emb.build_llama_documents(documents)
     assert type(llama_documents) == list
 
 
-def test_embed(my_config):
-    emb = Embedor(my_config)
+def test_embed(my_config, my_secrets):
+    emb = Embedor(config=my_config, secrets=my_secrets)
     doc_count = emb.embed(start_idx=368035, end_idx=368187)
     print(f"doc count: {doc_count}")
     assert type(doc_count) == int
 
 
-def test_get_document_metadata(my_config):
-    emb = Embedor(my_config)
+def test_get_document_metadata(my_config, my_secrets):
+    emb = Embedor(config=my_config, secrets=my_secrets)
     document_metadata = emb.get_document_metadata()
     assert type(document_metadata) == dict
     print(document_metadata.keys())
 
 
-def test_update_faiss_index(my_config):
-    emb = Embedor(my_config)
+def test_update_faiss_index(my_config, my_secrets):
+    emb = Embedor(config=my_config, secrets=my_secrets)
     doc_count = emb.update_faiss_index(start_idx=368035, end_idx=368199)
     assert type(doc_count) == int
 
@@ -96,7 +96,7 @@ def test_update_faiss_index(my_config):
 
 def test__init_llm_model(my_config, my_secrets):
     query = Query(my_config, my_secrets)
-    tokenizer, llm_model = query._init_llm_model()
+    llm_model = query._init_llm_model()
     assert type(llm_model).__name__ == 'HuggingFaceLLM'
 
 

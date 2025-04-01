@@ -9,9 +9,8 @@ sys.path.append("../src")
 from storage.filesystem import FileStorage
 
 
-def test_module(filesytem_config):
-    config = filesytem_config
-    filestorage = config['preprocessor']['filestorage']
+def test_module(my_config, my_secrets):
+    filestorage = 'filesystem'
     fsm = import_module(f"src.storage.{filestorage}")
     assert type(fsm).__name__ == 'module'
 
