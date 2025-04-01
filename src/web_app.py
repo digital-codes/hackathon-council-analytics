@@ -1,9 +1,18 @@
+#streamlit run src/web_app.py ~/.config/hca/ --server.port=8686  --server.address=0.0.0.0
 import streamlit as st
-import tomllib
+import sys
 import os
-from query import RAG_LLM
-import toml
+from ragllm import RagLlm
 import tomllib
+import toml
+
+# Define Defaults
+DOCKER_CONFIGDIR = "/config"
+
+if len(sys.argv) >= 2:
+    configdir = sys.argv[1]
+else:
+    configdir = DOCKER_CONFIGDIR
 
 
 config = None
@@ -17,17 +26,19 @@ st_history_input  = "**You**"
 st_history_output = "**Chatbot**"
 st_error_text = "Please enter a question!"
 
-# TODO: set a cmdline argument for configfile
-# configfile = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
-configfile = os.path.expanduser(os.path.join('~','Programmieren','SASHackathon','src', 'config_sample.toml'))
 
-try:
+@st.cache_resource
+def load_rag_llm(config: dict, secrets: dict):
+    return RagLlm(config=config,secrets=secrets)
+
+def read_config(configfile: str) -> dict:
     with open(configfile, "rb") as f:
-            config = tomllib.load(f)
-except FileNotFoundError:
-    pass
-    # TODO: setup a cmdline Argument for verbose output
-    #print("use defaults")
+        config = tomllib.load(f)
+    return config
+
+config = read_config(os.path.join(configdir, 'config.toml'))
+secrets = read_config(os.path.join(configdir, 'secrets.toml'))
+
 
 
 if config and config.get('streamlit'):
@@ -96,15 +107,12 @@ if page == "chat":
     st.header(st_header)
     user_input = st.text_input(st_user_input)
 
-    @st.cache_resource
-    def load_rag_llm():
-        return RAG_LLM(configfile)
-
-    # rag_llm = load_rag_llm()
+    rag_llm = load_rag_llm(config=config, secrets=secrets)
 
     if st.button(st_get_response):
         if user_input:
-            response = "test" # rag_llm.query_rag_llm(user_input)
+            response = rag_llm.run_query(user_input)
+
 
             st.markdown(st_chbt_response)
             st.success(response)

@@ -26,14 +26,6 @@ Heidelberg City Council automatic document processing, analyzing and chatbot.
 ## About
 This project intends to automatically download hundreds of thousand of publicly available documents from Heidelberg City Council's website regularly and transform them by indexation and vectorization before finally run data analytics models against them using NLP and LLM. The purpose is to create a democratic trusted system whereby all stakeholders will be able to search, analyze and get answer to their questions quickly and transparently.
 
-## Quick Start
-For a simple setup of the open-source RAG-LLM, a Docker image is available on Dockerhub. Just download it to a CUDA compatible computer:
-
-```
-$ ~ > docker pull chrisbtt/council-analytics:latest
-$ ~ > docker run -d -v <path/to/vectorDB>s:/app/CouncilEmbeddings -p 8501:8501 --gpus all chrisbtt/council-analytics:latest
-```
-
 ## Development
 
 ### Prerequisites
@@ -173,29 +165,6 @@ classDiagram
     download: _request_pdf(idx)
 
 ```
-
-### Testing
-
-#### Unit tests
-
-A simple unit test is implemented in directory `tests` and can be simply executed with a single command:
-
-```
-$ pytest
-```
-
-You are welcome to extend the testing environment for a better code and case coverage. 
-
-#### ChatBot evaluation
-
-The *DeepEval* framework is used to access Chatbot metrics and evaluate the Rag LLM pipeline on a given set of questions.
-In order to run the basic *Faithfullness* check, type:
-
-...
-$ python3 src/evaluation.py
-...
-
-The test itself also uses LLM power internally. Thus, calculation might take a while.
 
 ## Community
 
