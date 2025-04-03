@@ -21,7 +21,7 @@ class FileStorage:
 
     def __init__(self,config: dict,secrets: dict) -> None:
         try:
-            self.path = config['documents']['filestorage']['path']
+            self.path = config['documentstorage']['filesystem']['path']
         except KeyError:
             raise Exception("A path configuration is required")
         self.config = config

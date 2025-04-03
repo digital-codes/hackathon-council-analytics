@@ -5,7 +5,7 @@ filestorage = "filesystem"
 # also see secrets
 folder = "CouncilDocuments"
 
-[documentstorage.filestorage]
+[documentstorage.filesystem]
 path = '/media/ncdata/__groupfolders/4/CouncilDocuments'
 
 [preprocessor]

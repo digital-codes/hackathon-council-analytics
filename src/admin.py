@@ -81,7 +81,7 @@ def update_storage(config: dict, secrets: dict, requests: int) -> None:
          pp.process_pdf(idx)
               
 
-def embed(config: dict,secrets: dict, start_id: Optional[int] = None, end_id: Optional[int] = None) -> None:
+def embed(config: dict, secrets: dict, start_id: Optional[int] = None, end_id: Optional[int] = None) -> None:
     """
     Embed given Range of documents
     When start_id and end_id are not specified embeds all documents in Storage
