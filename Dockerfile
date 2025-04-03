@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Den gesamten Code ins Arbeitsverzeichnis kopieren
 COPY src .
-RUN mkdir -p ~/.config/hca
+RUN mkdir -p /root/.config/hca
 
 # Port für Streamlit freigeben
 EXPOSE 8501
