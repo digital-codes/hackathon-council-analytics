@@ -1,10 +1,20 @@
+#streamlit run src/web_app.py ~/.config/hca/ --server.port=8686  --server.address=0.0.0.0
 import streamlit as st
-import tomllib
+import sys
 import os
-from query import RAG_LLM
+from ragllm import RagLlm
 import tomllib
+import toml
 
 # Define Defaults
+DOCKER_CONFIGDIR = "/config"
+
+if len(sys.argv) >= 2:
+    configdir = sys.argv[1]
+else:
+    configdir = DOCKER_CONFIGDIR
+
+
 config = None
 st_title = "Council Agenda Analytics Chatbot"
 st_header = "Ask anything!"
@@ -16,22 +26,22 @@ st_history_input  = "**You**"
 st_history_output = "**Chatbot**"
 st_error_text = "Please enter a question!"
 
-# TODO: set a cmdline argument for configfile
-configfile = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
 
-try:
-        with open(configfile, "rb") as f:
-                config = tomllib.load(f)
-except FileNotFoundError:
-    pass
-    # TODO: setup a cmdline Argument for verbose output
-    #print("use defaults")
+@st.cache_resource
+def load_rag_llm(config: dict, secrets: dict):
+    return RagLlm(config=config,secrets=secrets)
+
+def read_config(configfile: str) -> dict:
+    with open(configfile, "rb") as f:
+        config = tomllib.load(f)
+    return config
+
+config = read_config(os.path.join(configdir, 'config.toml'))
+secrets = read_config(os.path.join(configdir, 'secrets.toml'))
 
 
 
 if config and config.get('streamlit'):
-    # We have a configuration and will override the defaults now
-    # print("found config")
     st_title  = config['streamlit'].get('title') or st_title
     st_header = config['streamlit'].get('header') or st_header
     st_user_input = config['streamlit'].get('user_input') or st_user_input 
@@ -43,27 +53,72 @@ if config and config.get('streamlit'):
     st_error_text = config['streamlit'].get('error_text') or st_error_text
 
 
-st.title(st_title)
-st.header(st_header)
-user_input = st.text_input(st_user_input)
+page = st.sidebar.radio("Seite auswählen", ["Chat", "Konfiguration"])
 
-@st.cache_resource
-def load_rag_llm():
-    return RAG_LLM(configfile)
+if page == "Konfiguration":
+    st.title("Konfiguration")
+    
+    if "frameworks" not in config:
+        config["frameworks"] = {
+            "filestorage": "local",
+            "embed": config["model"]["embed_name"],
+            "llm": config["model"]["llm_name"]
+        }
+    
+    filestorage_options = config["frameworks"].get("filestorage")
+    print(filestorage_options)
+    embed_options = config["frameworks"].get("embed")
+    llm_options = config["frameworks"].get("llm")
+    
+    selected_filestorage = st.selectbox(
+        "Wähle den Filestorage-Typ",
+        filestorage_options,
+        index=filestorage_options.index(config["model"]["filestorage"])
+    )  
 
-rag_llm = load_rag_llm()
+    selected_embedding = st.selectbox(
+        "Wähle das Embedding-Modell",
+        embed_options,
+        index=embed_options.index(config["model"]["embed_name"])
+    )    
 
-if st.button(st_get_response):
-    if user_input:
-        response = rag_llm.query_rag_llm(user_input)
+    selected_llm = st.selectbox(
+        "Wähle das LLM-Modell",
+        llm_options,
+        index=llm_options.index(config["model"]["llm_name"])
+    )
+    
+    config["model"]["filestorage"] = selected_filestorage
+    config["model"]["embed_name"] = selected_embedding
+    config["model"]["llm_name"] = selected_llm
+    
+    st.write("Aktuelle Modell-Konfiguration:", config["model"])
+    
+    if st.button("Konfiguration speichern"):
+        with open(configfile, "w") as f:
+            toml.dump(config, f)
+        st.success("Konfiguration wurde aktualisiert!")
+    
+    st.stop()
 
-        # Display the response
-        st.markdown(st_chbt_response)
-        st.success(response)
 
-        # Optionally, you can show chat history
-        st.markdown(st_chbt_history)
-        st.markdown(f"{st_history_input}: {user_input}")
-        st.markdown(f"{st_history_output}: {response}")
-    else:
-        st.error(st_error_text)
+if page == "chat":
+    st.title(st_title)
+    st.header(st_header)
+    user_input = st.text_input(st_user_input)
+
+    rag_llm = load_rag_llm(config=config, secrets=secrets)
+
+    if st.button(st_get_response):
+        if user_input:
+            response = rag_llm.run_query(user_input)
+
+
+            st.markdown(st_chbt_response)
+            st.success(response)
+
+            st.markdown(st_chbt_history)
+            st.markdown(f"{st_history_input}: {user_input}")
+            st.markdown(f"{st_history_output}: {response}")
+        else:
+            st.error(st_error_text)
