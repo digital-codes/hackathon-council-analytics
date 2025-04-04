@@ -362,6 +362,7 @@ class Query:
         if not self.query_engine:
             self.query_engine = self._configure_query_engine()
         retrieved_nodes = self.query_engine.retriever.retrieve(user_query)
+        scores = [node.score for node in retrieved_nodes]
         retrieved_files = [node.metadata for node in retrieved_nodes]
         retrieved_texts = [node.text for node in retrieved_nodes]
 
