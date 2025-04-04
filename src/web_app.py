@@ -65,32 +65,30 @@ if page == "Konfiguration":
             "llm": config["model"]["llm_name"]
         }
     
-    filestorage_options = config["frameworks"].get("filestorage")
-    print(filestorage_options)
-    embed_options = config["frameworks"].get("embed")
-    llm_options = config["frameworks"].get("llm")
-    
+    available_filestorages = [key for key, value in config.get("documentstorage", {}).items() if isinstance(value, dict)]
     selected_filestorage = st.selectbox(
         "Wähle den Filestorage-Typ",
-        filestorage_options,
-        index=filestorage_options.index(config["model"]["filestorage"])
-    )  
+        available_filestorages,
+        index=available_filestorages.index(config["documentstorage"]["filestorage"])
+    )
 
+    available_embeddings = [key for key, value in config.get("embedding", {}).items() if isinstance(value, dict)]
     selected_embedding = st.selectbox(
         "Wähle das Embedding-Modell",
-        embed_options,
-        index=embed_options.index(config["model"]["embed_name"])
+        available_embeddings,
+        index=available_embeddings.index("faiss")
     )    
 
-    selected_llm = st.selectbox(
-        "Wähle das LLM-Modell",
-        llm_options,
-        index=llm_options.index(config["model"]["llm_name"])
-    )
+    # available_llms = [key for key, value in config.get("embedding", {}).items() if isinstance(value, dict)]
+    # selected_llm = st.selectbox(
+    #     "Wähle das LLM-Modell",
+    #     llm_options,
+    #     index=llm_options.index(config["model"]["llm_name"])
+    # )
     
     config["model"]["filestorage"] = selected_filestorage
     config["model"]["embed_name"] = selected_embedding
-    config["model"]["llm_name"] = selected_llm
+    # config["model"]["llm_name"] = selected_llm
     
     st.write("Aktuelle Modell-Konfiguration:", config["model"])
     
@@ -102,7 +100,7 @@ if page == "Konfiguration":
     st.stop()
 
 
-if page == "chat":
+if page == "Chat":
     st.title(st_title)
     st.header(st_header)
     user_input = st.text_input(st_user_input)
