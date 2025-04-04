@@ -7,6 +7,7 @@ import json
 from rainbow_tqdm import tqdm
 #from tqdm import tqdm
 #from multiprocessing import Pool
+import time
 from preprocessor import Preprocessor
 from ragllm import RagLlm
 from typing import Optional
@@ -109,8 +110,11 @@ def retriever(config: dict, secrets: dict, user_query: str):
     return documents in json format
     """
     vprint('retriever got called', config)
+    start_time = time.time()
     rag_llm = RagLlm(config=config, secrets=secrets)
-    result = rag_llm.retrieve_docs(user_query)
+    retrieval_result = rag_llm.retrieve_docs(user_query)
+    time_spent = time.time() - start_time
+    result = {'time_spent': time_spent, 'result': retrieval_result}
     print(json.dumps(result))
 
 
