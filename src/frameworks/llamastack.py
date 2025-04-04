@@ -365,4 +365,5 @@ class Query:
         result = []
         for node in retrieved_nodes:
             result.append({'score': node.score, 'metadata': node.metadata, 'content': node.text })
-        return result
+        result_sorted = sorted(result, key=lambda x: x['score'], reverse=True)
+        return result_sorted

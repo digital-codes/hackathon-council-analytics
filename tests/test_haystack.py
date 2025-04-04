@@ -77,7 +77,7 @@ def test_query_rag_llm(my_config, my_secrets):
 def test_run_retriever_pipeline(my_config, my_secrets):
     query = Query(config=my_config, secrets=my_secrets)
     user_query = "Wie viele Unterlagen des Finanzausschusses sind vorhanden und welche sind das?"
-    retriever_documents = query.run_retriever_pipeline(user_query)
+    retriever_documents = query.retrieve_docs(user_query)
     print(retriever_documents)
     assert len(retriever_documents) > 0
 

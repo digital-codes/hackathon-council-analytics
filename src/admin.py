@@ -111,7 +111,7 @@ def retriever(config: dict, secrets: dict, user_query: str):
     vprint('retriever got called', config)
     rag_llm = RagLlm(config=config, secrets=secrets)
     result = rag_llm.retrieve_docs(user_query)
-    print(result)
+    print(json.dumps(result))
 
 
 arg_template = {

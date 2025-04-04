@@ -194,8 +194,12 @@ class Query:
         retriever_pipeline.add_component("text_embedder", self.init_text_embedder())
         retriever_pipeline.add_component("retriever", self.init_retriever())
         retriever_pipeline.connect("text_embedder.embedding", "retriever.query_embedding")
-        result = retriever_pipeline.run({"text_embedder": {"text": user_query}})
-        return result['retriever']['documents']
+        retriever_result = retriever_pipeline.run({"text_embedder": {"text": user_query}})
+        result = []
+        for document in retriever_result['retriever']['documents']:
+            result.append({'score': document.score, 'metadata': document.meta, 'content': document.content})
+        result_sorted = sorted(result, key=lambda x: x['score'], reverse=True)
+        return result_sorted
 
     def query_rag_llm(self, user_query: str) -> str:
         """
