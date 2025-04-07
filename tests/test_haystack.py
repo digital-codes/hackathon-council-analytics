@@ -2,7 +2,6 @@ import sys
 
 sys.path.append("../src")
 
-from ragllm import RagLlm
 from frameworks.haystack import Embedor
 from frameworks.haystack import Query
 

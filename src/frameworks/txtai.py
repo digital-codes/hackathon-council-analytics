@@ -1,4 +1,5 @@
-from txtai import Embeddings
+from txtai import Embeddings, RAG
+import torch
 from preprocessor import Preprocessor
 from typing import Optional
 from utils import vprint
@@ -10,18 +11,46 @@ https://github.com/neuml/txtai/blob/master/examples/01_Introducing_txtai.ipynb
 #Defaults
 llm_model_name = "google/flan-t5-large"
 embedding_model_name = "sentence-transformers/nli-mpnet-base-v2"
+index_dir = "/media/ncdata/__groupfolders/4/TestEmbeddings/index"
+
+class Helper:
+
+    def __init__(self, config: dict):
+        self.config = config
+        self.index_dir = config.get('embedding', {}).get('txtai', {}).get('index_dir') or index_dir
+        self.embedding_model_name = config.get('embedding', {}).get('txtai', {}).get(
+            'embedding_model_name') or embedding_model_name
+
+    def get_embeddings(self):
+        embeddings = Embeddings(hybrid=True, path=self.embedding_model_name, content=True, objects=True)
+        if embeddings.exists(self.index_dir):
+            embeddings.load(self.index_dir)
+        return embeddings
 
 
 class Embedor:
 
-    #TODO: Floating Window
 
     def __init__(self, config: dict, secrets: dict) -> None:
         self.config = config
         self.pp = Preprocessor(config,secrets)
         self.fs = self.pp.fs
-        self.embedding_model_name = config.get('embedding', {}).get('txtai', {}).get('embedding_model_name') or embedding_model_name
-        self.embedding = Embeddings(path=self.embedding_model_name)
+        helper = Helper(config)
+        #self.embeddings = Embeddings(path=self.embedding_model_name)
+        self.embeddings = helper.get_embeddings()
+        self.index_dir = helper.index_dir
+
+    def embed_data(self,data):
+        """
+        Create an index for the list of text
+        """
+        self.embeddings.index(data)
+        return self.embeddings
+
+
+
+    def save_index(self):
+        self.embeddings.save(self.index_dir)
 
 
     def embed(self,  start_idx: Optional[int] = None, end_idx: Optional[int] = None) -> None:
@@ -34,8 +63,9 @@ class Embedor:
         #ToDo: preprocessed documents, update    
         """
         documents = self.fs.get_documents(start_idx=start_idx,end_idx=end_idx)
-        count = self.embed_and_index_documents(documents)
-        return count
+        self.embeddings.index([{"text": doc['text'], "filename": doc['filename'], "length": len(doc['text'])} for doc in documents])
+        self.save_index()
+        return self.embeddings
 
 
 class Query:
@@ -48,8 +78,8 @@ The RAG pipeline is txtai's spin on retrieval augmented generation (RAG). This p
 
     def __init__(self, config: dict, secrets: dict) -> None:
         self.config = config
-        self.embedding_model_name = config.get('embedding', {}).get('txtai', {}).get('embedding_model_name') or embedding_model_name
-        self.embedding =  Embeddings(path=self.embedding_model_name, content=True)
+        self.helper = Helper(config)
+        self.embeddings = self.helper.get_embeddings()
 
 
     def prompt(self, question):
@@ -67,9 +97,9 @@ Context:
         params:
         - user_query
         """
-        rag = RAG(embeddings,
+        rag = RAG(self.embeddings,
                   "google/flan-t5-large",
                   torch_dtype=torch.bfloat16,
                   output="reference")
-        ans = rag(prompt(user_query))[0]
+        ans = rag(self.prompt(user_query))[0]
         return ans
