@@ -71,23 +71,6 @@ def test_embed(my_config, my_secrets):
     assert embeddings.count() == 245
 
 
-def test_save_index(my_config, my_secrets):
-    emb = Embedor(config=my_config, secrets=my_secrets)
-    data = [
-        "US tops 5 million confirmed virus cases",
-        "Canada's last fully intact ice shelf has suddenly collapsed, forming a Manhattan-sized iceberg",
-        "Beijing mobilises invasion craft along coast as Taiwan tensions escalate",
-        "The National Park Service warns against sacrificing slower friends in a bear attack",
-        "Maine man wins $1M from $25 lottery ticket",
-        "Make huge profits without work, earn up to $100,000 a day"
-    ]
-    # Create an embeddings
-    embeddings = emb.embed_data(data)
-    emb.save_index()
-
-    assert True
-
-
 #######################
 ### QUERY           ###
 #######################
@@ -99,7 +82,22 @@ def test_query(my_config, my_secrets):
 
 def test_query_rag_llm(my_config, my_secrets):
     query = Query(config=my_config, secrets=my_secrets)
-    user_query = "What country is having issues with climate change?"
+    user_query = "Wer ist Prof. Dr. Dieter Hermann?"
     ans = query.query_rag_llm(user_query)
     print(ans)
     assert type(ans) == dict
+
+
+def test_retrieve_docs(my_config, my_secrets):
+    query = Query(config=my_config, secrets=my_secrets)
+    user_query = "Wer ist Prof. Dr. Dieter Hermann?"
+    retriever_documents = query.retrieve_docs(user_query)
+    print(retriever_documents)
+    assert len(retriever_documents) > 0
+
+
+def test_report_status(my_config, my_secrets):
+    query = Query(config=my_config, secrets=my_secrets)
+    status = query.report_status()
+    print(status)
+    assert status[0]['count(*)'] == 245

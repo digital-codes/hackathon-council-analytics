@@ -47,8 +47,6 @@ class Embedor:
         self.embeddings.index(data)
         return self.embeddings
 
-
-
     def save_index(self):
         self.embeddings.save(self.index_dir)
 
@@ -65,7 +63,7 @@ class Embedor:
         documents = self.fs.get_documents(start_idx=start_idx,end_idx=end_idx)
         self.embeddings.index([{"text": doc['text'], "filename": doc['filename'], "length": len(doc['text'])} for doc in documents])
         self.save_index()
-        return self.embeddings
+        return self.embeddings.count()
 
 
 class Query:
@@ -103,3 +101,15 @@ Context:
                   output="reference")
         ans = rag(self.prompt(user_query))[0]
         return ans
+
+    def retrieve_docs(self, user_query) -> list[str]:
+        retrieved_nodes = self.embeddings.search(f"select text, filename, score from txtai where similar('{user_query}') and score >= 0.15")
+        result = []
+        for node in retrieved_nodes:
+            result.append({'score': node['score'], 'metadata': {'filename': node['filename']}, 'content': node['text']})
+        return result
+
+    def report_status(self):
+        res = self.embeddings.search("select count(*), min(length), max(length), sum(length) from txtai")
+        return res
+

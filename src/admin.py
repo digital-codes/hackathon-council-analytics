@@ -116,6 +116,7 @@ def retriever(config: dict, secrets: dict, user_query: str):
     time_spent = time.time() - start_time
     result = {'time_spent': time_spent, 'result': retrieval_result}
     print(json.dumps(result))
+    return result
 
 
 arg_template = {
