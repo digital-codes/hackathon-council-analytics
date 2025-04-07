@@ -16,7 +16,7 @@ from utils import vprint
 #Defaults
 DEFAULT_CONFIGFILE = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
 DEFAULT_SECRETSFILE = os.path.expanduser(os.path.join('~','.config','hca','secrets.toml'))
-FRAMEWORKS = ['llamastack','haystack']
+FRAMEWORKS = ['llamastack','haystack','txtai']
 global_parser = argparse.ArgumentParser(epilog="use <subcommand> --help for more details")
 
 def show_config(config: dict,secrets: dict, section: Optional[str]=None) -> None:
