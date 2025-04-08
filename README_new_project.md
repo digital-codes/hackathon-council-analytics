@@ -5,7 +5,7 @@ Here, a cloud solution is presented, but later in this README, the slightly diff
 
 ## Project overview
 
-In order to start from scratch with new set of documents, the database has to created and linked to the LLM afterwards: 
+In order to start from scratch with new set of documents, the database has to created and linked to the LLM afterwards::
 
 1. Upload data to nextcloud
 2. Convert PDFs to TXT files 
