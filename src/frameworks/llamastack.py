@@ -69,7 +69,7 @@ class Helper:
         else:
             self.embedding_model_name = config.get('embedding', {}).get('embedding_model_name') or embedding_model_name
             self.embedding_dim = config.get('embedding', {}).get('embedding_dim') or embedding_dim
-        self.index_dir = config.get('embedding', {}).get('faiss').get('index_dir') or index_dir
+        self.index_dir = config.get('embedding', {}).get('faiss',{}).get('index_dir') or index_dir
         self.faiss_index_path = os.path.join(self.index_dir, "faiss_index.idx")
 
     def initialize_embedding_model(self):
@@ -314,7 +314,7 @@ class Query:
         return vector_store_index
 
     def report_status(self):
-        vector_store =  self.helper.get_vector_store()
+        vector_store = self.helper.get_vector_store()
         index = self.get_vector_store_index()
         print(f"Vectors in FAISS index: {vector_store._faiss_index.ntotal}")
         print(f"Documents in Vector Store Index: {len(index.ref_doc_info)}")
@@ -362,8 +362,8 @@ class Query:
         if not self.query_engine:
             self.query_engine = self._configure_query_engine()
         retrieved_nodes = self.query_engine.retriever.retrieve(user_query)
-        scores = [node.score for node in retrieved_nodes]
-        retrieved_files = [node.metadata for node in retrieved_nodes]
-        retrieved_texts = [node.text for node in retrieved_nodes]
-
-        return retrieved_files, retrieved_texts
+        result = []
+        for node in retrieved_nodes:
+            result.append({'score': node.score, 'metadata': node.metadata, 'content': node.text })
+        result_sorted = sorted(result, key=lambda x: x['score'], reverse=True)
+        return result_sorted

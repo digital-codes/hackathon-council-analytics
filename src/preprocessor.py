@@ -33,7 +33,7 @@ Example usage:
 #TODO: make messages clearer
 
 # Defaults
-filestorage = 'nextcloud'
+filestorage = 'filesystem'
 source_url = 'https://www.gemeinderat.heidelberg.de/getfile.asp'
 
 
@@ -50,7 +50,7 @@ class Preprocessor:
         """
         self.config     = config
         self.source_url = config.get('source',{}).get('url') or source_url
-        _filestorage = config.get('documentstorage',{}).get('filestorage') or filestorage
+        _filestorage = config.get('documents',{}).get('storage') or filestorage
         fsm = import_module(f"storage.{_filestorage}")
         self.fs         = fsm.FileStorage(config=config, secrets=secrets)
 

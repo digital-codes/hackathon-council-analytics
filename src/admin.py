@@ -7,6 +7,7 @@ import json
 from rainbow_tqdm import tqdm
 #from tqdm import tqdm
 #from multiprocessing import Pool
+import time
 from preprocessor import Preprocessor
 from ragllm import RagLlm
 from typing import Optional
@@ -15,7 +16,7 @@ from utils import vprint
 #Defaults
 DEFAULT_CONFIGFILE = os.path.expanduser(os.path.join('~','.config','hca','config.toml'))
 DEFAULT_SECRETSFILE = os.path.expanduser(os.path.join('~','.config','hca','secrets.toml'))
-FRAMEWORKS = ['llamastack','haystack']
+FRAMEWORKS = ['llamastack','haystack','txtai']
 global_parser = argparse.ArgumentParser(epilog="use <subcommand> --help for more details")
 
 def show_config(config: dict,secrets: dict, section: Optional[str]=None) -> None:
@@ -109,9 +110,13 @@ def retriever(config: dict, secrets: dict, user_query: str):
     return documents in json format
     """
     vprint('retriever got called', config)
+    start_time = time.time()
     rag_llm = RagLlm(config=config, secrets=secrets)
-    result = rag_llm.retrieve_docs(user_query)
-    print(result)
+    retrieval_result = rag_llm.retrieve_docs(user_query)
+    time_spent = time.time() - start_time
+    result = {'time_spent': time_spent, 'result': retrieval_result}
+    print(json.dumps(result))
+    return result
 
 
 arg_template = {
