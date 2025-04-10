@@ -13,6 +13,7 @@ from llama_index.core.node_parser import SentenceSplitter
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
+from llama_index.llms.ollama import Ollama
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 from preprocessor import Preprocessor
@@ -303,7 +304,8 @@ class Query:
         storage_context = self.helper.get_storage_context()
         self.huggingface_login()
         embed_model = self.helper.initialize_embedding_model()
-        llm_model = self._init_llm_model()
+        # llm_model = self._init_llm_model()
+        llm_model = Ollama(model="llama3.2", request_timeout=600.0)
         Settings.llm = llm_model
         # Settings.tokenizer = tokenizer
         Settings.embed_model = embed_model
