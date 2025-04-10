@@ -1,10 +1,20 @@
 services:
   hca:
-    image: local/hca
+    image: local/council-analytics:latest
+    # image: chrisbtt/council-analytics:latest
     container_name: hca
     restart: unless-stopped
     ports:
       - 8501:8501
     volumes:
-      - /root/hackathon-council-analytics/src/config_sample.toml:/root/.config/hca/config.toml
-      - /root/hackathon-council-analytics/CouncilEmbeddings:/app/CouncilEmbeddings
+      - /root/.config/hca/config.toml:/config/config.toml
+      - /root/.config/hca/secrets.toml:/config/secrets.toml
+      - /media/ncdata/__groupfolders/4/CouncilEmbeddings/:/app/CouncilEmbeddings/
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
