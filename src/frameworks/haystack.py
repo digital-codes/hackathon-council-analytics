@@ -55,8 +55,8 @@ class Embedor:
         self.qdrant_api_key = secrets['api']['qdrant_api_key']
         self.hf_token = secrets['api']['hf_key']
         self.document_store_path = config.get('embedding',{}).get('qdrant',{}).get('index_dir')
-        #self.document_store = self.build_local_document_store()
-        self.document_store = self.build_server_document_store()
+        self.document_store = self.build_local_document_store()
+        #self.document_store = self.build_server_document_store()
         self.embedding_model_name = config.get('embedding', {}).get('qdrant', {}).get('embedding_model_name')
 
     def build_server_document_store(self) -> QdrantDocumentStore:
