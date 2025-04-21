@@ -1,5 +1,36 @@
 services:
-  hca:
+  # Ollama per CPU-Profil
+  hca-ollama-cpu:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    profiles:
+      - cpu
+
+  # Ollama per GPU-Profil (NVIDIA)
+  hca-ollama-gpu:
+    image: ollama/ollama
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    profiles:
+      - gpu
+
+  hca-app:
     image: local/council-analytics:latest
     # image: chrisbtt/council-analytics:latest
     container_name: hca
@@ -9,12 +40,15 @@ services:
     volumes:
       - /root/.config/hca/config.toml:/config/config.toml
       - /root/.config/hca/secrets.toml:/config/secrets.toml
-      - /media/ncdata/__groupfolders/4/CouncilEmbeddings/:/app/CouncilEmbeddings/
+      - /media/ncdata/__groupfolders/4/TestEmbeddings/:/app/TestEmbeddings/
 
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+volumes:
+  ollama:
