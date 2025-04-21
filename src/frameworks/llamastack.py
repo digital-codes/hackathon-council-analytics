@@ -22,7 +22,7 @@ from huggingface_hub import login
 from transformers import AutoTokenizer, BitsAndBytesConfig
 from tqdm import tqdm
 from typing import Optional
-from utils import vprint
+from utils import vprint, is_docker
 import os
 
 """
@@ -79,9 +79,10 @@ class Helper:
         initialise the embedding model
         """
         # embedding_model = HuggingFaceEmbedding(model_name=self.embedding_model_name)
+        base_url = "http://hca-ollama-cpu:11434" if is_docker() else "http://localhost:11434"
         embedding_model = OllamaEmbedding(
             model_name="mxbai-embed-large",
-            base_url="http://localhost:11434",
+            base_url=base_url,
             ollama_additional_kwargs={"prostatic": 0},
         )
         if embedding_model:
@@ -311,7 +312,11 @@ class Query:
         self.huggingface_login()
         embed_model = self.helper.initialize_embedding_model()
         # llm_model = self._init_llm_model()
-        llm_model = Ollama(model="llama3.2", request_timeout=600.0)
+        base_url = "http://hca-ollama-cpu:11434" if is_docker() else "http://localhost:11434"
+        llm_model = Ollama(
+            model="llama3.2",
+            base_url=base_url,
+            request_timeout=600.0)
         Settings.llm = llm_model
         # Settings.tokenizer = tokenizer
         Settings.embed_model = embed_model
