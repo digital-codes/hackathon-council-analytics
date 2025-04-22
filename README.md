@@ -39,10 +39,11 @@ After linking the docker image to the configuration settings, the container can 
 docker pull chrisbtt/council-analytics:latest
 ```
 ```
-docker compose up -d
+docker compose --profile cpu up -d
 ```
+Depending on the hardware, the profile ``cpu`` can be replaced by ``gpu`` executing **Ollama** on all available CUDA GPUs.
 
-This procedure will open up a port for the ChatBot: *https://localhost:8501*. 
+The docker container will open up a port for the ChatBot: *https://localhost:8501*. 
 
 For code development, the docker image can also be build from source including new adjustments instead of pulling from Docker Hub: 
 ```
