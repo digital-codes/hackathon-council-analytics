@@ -24,7 +24,7 @@ cryptography==44.0.2
 dataclasses-json==0.6.7
 datasets==3.3.2
 decorator==5.2.1
-deepeval==2.6.3
+deepeval==2.7.5
 Deprecated==1.2.18
 dill==0.3.8
 dirtyjson==1.0.8

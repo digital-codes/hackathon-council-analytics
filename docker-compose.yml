@@ -7,9 +7,13 @@ services:
       - "11434:11434"
     volumes:
       - ollama:/root/.ollama
+      - ./src/scripts/ollama_docker_init.sh:/usr/ollama_docker_init.sh
     restart: unless-stopped
+    entrypoint: ["/usr/ollama_docker_init.sh"]
     profiles:
       - cpu
+      - devel
+  # TODO: set entrypoint to load llm & ambedding
 
   # Ollama per GPU-Profil (NVIDIA)
   hca-ollama-gpu:
@@ -49,6 +53,9 @@ services:
     #         - driver: nvidia
     #           count: all
     #           capabilities: [gpu]
+    profiles:
+      - cpu
+      - gpu
 
 volumes:
   ollama:
