@@ -196,7 +196,7 @@ SecretStorage==3.3.3
 sentence-transformers==3.4.1
 sentencepiece==0.2.0
 sentry-sdk==2.22.0
-setuptools==75.8.0
+setuptools==78.1.1
 shellingham==1.5.4
 six==1.17.0
 smmap==5.0.2
