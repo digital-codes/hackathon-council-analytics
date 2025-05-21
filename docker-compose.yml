@@ -6,14 +6,13 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama:/root/.ollama
+      - ollama:/var/etc/.ollama
       - ./src/scripts/ollama_docker_init.sh:/usr/ollama_docker_init.sh
-    restart: unless-stopped
     entrypoint: ["/usr/ollama_docker_init.sh"]
+    restart: unless-stopped
     profiles:
       - cpu
       - devel
-  # TODO: set entrypoint to load llm & ambedding
 
   # Ollama per GPU-Profil (NVIDIA)
   hca-ollama-gpu:
@@ -22,7 +21,9 @@ services:
     ports:
       - "11434:11434"
     volumes:
-      - ollama:/root/.ollama
+      - ollama:/var/etc/.ollama
+      - ./src/scripts/ollama_docker_init.sh:/usr/ollama_docker_init.sh
+    entrypoint: ["/usr/ollama_docker_init.sh"]
     restart: unless-stopped
     deploy:
       resources:
@@ -35,8 +36,7 @@ services:
       - gpu
 
   hca-app:
-    image: local/council-analytics:latest
-    # image: chrisbtt/council-analytics:latest
+    image: chrisbtt/council-analytics:latest
     container_name: hca
     restart: unless-stopped
     ports:
@@ -44,7 +44,7 @@ services:
     volumes:
       - /root/.config/hca/config.toml:/config/config.toml
       - /root/.config/hca/secrets.toml:/config/secrets.toml
-      - /media/ncdata/__groupfolders/4/TestEmbeddings/:/app/TestEmbeddings/
+      - /media/ncdata/__groupfolders/4/CouncilEmbeddings/faiss/:/app/CouncilEmbeddings/
 
     # deploy:
     #   resources:

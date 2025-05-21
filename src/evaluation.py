@@ -81,8 +81,10 @@ class EvalHuggingFaceLLM(DeepEvalBaseLLM):
 
 def evaluate_model(config: str, secrets: str) -> None:
     
+    framework = config["model"]["framework"]
+    model = config["model"][framework]["llm_model_name"]
     eval_llm = OllamaModel( # EvalHuggingFaceLLM()
-        model="llama3.2",
+        model=model,
         base_url="http://localhost:11434"
     )
     questions = ["Wie viele Unterlagen des Finanzausschusses sind vorhanden und welche sind das?"]
