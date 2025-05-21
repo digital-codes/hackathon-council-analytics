@@ -1,4 +1,3 @@
-from ollama_ocr import OCRProcessor
 import os
 from rainbow_tqdm import tqdm
 import time
