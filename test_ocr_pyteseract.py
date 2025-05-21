@@ -10,7 +10,7 @@ import pytesseract
 # sudo apt install libtesseract-dev
 # sudo apt-get install tesseract-ocr-deu
 
-path = "/media/ncdata/__groupfolders/4/TestDocuments/"
+path = "/root/data/heidelberg_all_pdfs/"
 
 files = [f for f in os.listdir(path) if f.endswith('.pdf')]
 

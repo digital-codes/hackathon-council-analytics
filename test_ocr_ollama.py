@@ -4,14 +4,14 @@ from rainbow_tqdm import tqdm
 import time
 
 # Initialize OCR processor
-ocr = OCRProcessor(model_name='granite3.2-vision')
+ocr = OCRProcessor(model_name='llama3.2-vision:11b')
 
 path = "/media/ncdata/__groupfolders/4/TestDocuments/"
 
 files = [f for f in os.listdir(path) if f.endswith('.pdf')]
 
 start = time.time()
-for f in tqdm(files[:4]):
+for f in tqdm(files):
     print(f)
     # Erstellen des vollständigen Pfads zur PDF-Datei
     pdf_path = os.path.join(path, f)
