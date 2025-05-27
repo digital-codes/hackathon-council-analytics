@@ -2,6 +2,8 @@ import requests
 import pymupdf
 import pprint
 from multiprocessing import Pool
+from urllib3.util.retry import Retry
+from requests.adapters import HTTPAdapter
 from importlib import import_module
 from typing import Optional
 from utils import vprint
@@ -53,6 +55,21 @@ class Preprocessor:
         _filestorage = config.get('documents',{}).get('storage') or filestorage
         fsm = import_module(f"storage.{_filestorage}")
         self.fs         = fsm.FileStorage(config=config, secrets=secrets)
+
+        # Setup a session with Keep-Alive and retry policy
+        self.session = requests.Session()
+        retries = Retry(
+            total=3,
+            backoff_factor=0.5,
+            status_forcelist=[500, 502, 503, 504],
+            allowed_methods=["HEAD", "GET"]
+        )
+        adapter = HTTPAdapter(max_retries=retries)
+        self.session.mount("http://", adapter)
+        self.session.mount("https://", adapter)
+        self.session.headers.update({
+            "User-Agent": "Preprocessor/1.0"
+        })
 
     def show_config(self) -> str:
         """
@@ -118,12 +135,11 @@ class Preprocessor:
         url = f"{self.source_url}?id={idx}&type=do"
 
         try:
-            head_resp = requests.head(url, timeout=5)
+            head_resp = self.session.head(url, timeout=5)
         except requests.RequestException as e:
             vprint(f"HEAD request for {idx} failed: {e}", self.config)
             return None
 
-        # 2. Auf Status 200 und richtigen Content-Type prüfen
         content_type = head_resp.headers.get('Content-Type', '')
         if head_resp.status_code != 200:
             vprint(f"HEAD for {idx} returned status {head_resp.status_code}", self.config)
@@ -133,7 +149,7 @@ class Preprocessor:
             return None
 
         try:
-            get_resp = requests.get(url, stream=True, timeout=10)
+            get_resp = self.session.get(url, stream=True, timeout=10)
         except requests.RequestException as e:
             vprint(f"GET request for {idx} failed: {e}", self.config)
             return None
