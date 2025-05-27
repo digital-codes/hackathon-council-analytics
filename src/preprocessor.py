@@ -110,24 +110,41 @@ class Preprocessor:
             return False
 
 
-    def request_pdf(self, idx) -> str:
+    def request_pdf(self, idx) -> bytes:
         """
         Request the PDF file from the municipal council website.
         Returns the content of the file if it's a PDF, otherwise None.
         """
         url = f"{self.source_url}?id={idx}&type=do"
-        response = requests.get(url, stream=True)
-        if response.status_code == 404:
-            vprint(f"no file for {idx}", self.config)
-            return None
-        content_type = response.headers.get('content-type')
 
-        if 'application/pdf' in content_type:
-            vprint(f"PDF found for {idx}.", self.config)
-            return response.content
-        else:
-            vprint(f"The file retrieved for id {idx} is not a PDF.", self.config)
+        try:
+            head_resp = requests.head(url, timeout=5)
+        except requests.RequestException as e:
+            vprint(f"HEAD request for {idx} failed: {e}", self.config)
             return None
+
+        # 2. Auf Status 200 und richtigen Content-Type prüfen
+        content_type = head_resp.headers.get('Content-Type', '')
+        if head_resp.status_code != 200:
+            vprint(f"HEAD for {idx} returned status {head_resp.status_code}", self.config)
+            return None
+        if not content_type.startswith('application/pdf'):
+            vprint(f"HEAD for {idx}: not a PDF (Content-Type: {content_type})", self.config)
+            return None
+
+        try:
+            get_resp = requests.get(url, stream=True, timeout=10)
+        except requests.RequestException as e:
+            vprint(f"GET request for {idx} failed: {e}", self.config)
+            return None
+
+        if get_resp.status_code == 200:
+            vprint(f"PDF successfully downloaded for {idx}.", self.config)
+            return get_resp.content
+        else:
+            vprint(f"GET for {idx} returned status {get_resp.status_code}", self.config)
+            return None
+
 
     def extract_text(self, doc):
         text = ""
