@@ -10,7 +10,7 @@ appdirs==1.4.4
 attrs==25.1.0
 backoff==2.2.1
 beautifulsoup4==4.13.3
-bitsandbytes==0.45.2
+bitsandbytes==0.45.5
 black==25.1.0
 blinker==1.9.0
 cachetools==5.5.1
@@ -24,7 +24,7 @@ cryptography==44.0.2
 dataclasses-json==0.6.7
 datasets==3.3.2
 decorator==5.2.1
-deepeval==2.6.3
+deepeval==2.7.5
 Deprecated==1.2.18
 dill==0.3.8
 dirtyjson==1.0.8
@@ -91,10 +91,13 @@ llama-index==0.12.19
 llama-index-agent-openai==0.4.6
 llama-index-cli==0.4.0
 llama-index-core==0.12.19
+llama-index-embeddings-ollama==0.6.0
 llama-index-embeddings-huggingface==0.5.1
+llama-index-embeddings-ollama==0.6.0
 llama-index-embeddings-openai==0.3.1
 llama-index-indices-managed-llama-cloud==0.6.8
 llama-index-llms-huggingface==0.4.2
+llama-index-llms-ollama==0.5.4
 llama-index-llms-openai==0.3.20
 llama-index-multi-modal-llms-openai==0.4.3
 llama-index-program-openai==0.3.1
