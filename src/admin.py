@@ -49,7 +49,6 @@ def download(config: dict, secrets: dict,start_id: int, end_id: Optional[int] = 
              pp.download_pdf(idx)
             
 
-
 def preprocess(config: dict, secrets: dict, start_id: int, end_id: Optional[int] = None) -> None:
     """
     Download and preprocesses the pdfs and saves them to the configures File Storage
@@ -64,6 +63,7 @@ def preprocess(config: dict, secrets: dict, start_id: int, end_id: Optional[int]
     else:
         for idx in tqdm(range(start_id, end_id + 1), desc="Processing documents", unit="docs"):
              pp.process_pdf(idx)
+
 
 def update_storage(config: dict, secrets: dict, requests: int) -> None:
     """
@@ -103,6 +103,7 @@ def update(config: dict,secrets: dict, start_id: Optional[int] = None, end_id: O
     rag_llm = RagLlm(config=config, secrets=secrets)
     doc_count = rag_llm.update_index(start_id, end_id)
     return doc_count
+
 
 def retriever(config: dict, secrets: dict, user_query: str):
     """
