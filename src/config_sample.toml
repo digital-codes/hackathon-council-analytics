@@ -38,10 +38,11 @@ embedding_model_name = 'sentence-transformers/nli-mpnet-base-v2'
 [model]
 framework = "llamastack"
 #framework = "haystack"
+architecture = "ollama" # Currently no other options
 
 [model.llamastack]
-llm_model_name = "meta-llama/Meta-Llama-3.1-8B-Instruct"
-model_dir = "/media/ncdata/__groupfolders/4/meta-llama/Model"
+llm_model_name = "llama3.2"
+model_dir = "mxbai-embed-large"
 
 [model.haystack]
 llm_model_name = "mistralai/Mistral-7B-Instruct-v0.3"

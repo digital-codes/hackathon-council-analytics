@@ -12,7 +12,9 @@ from llama_index.core import (VectorStoreIndex,
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.llms.huggingface import HuggingFaceLLM
+from llama_index.llms.ollama import Ollama
 from llama_index.core.retrievers import VectorIndexRetriever
 from llama_index.core.query_engine import RetrieverQueryEngine
 from preprocessor import Preprocessor
@@ -20,7 +22,7 @@ from huggingface_hub import login
 from transformers import AutoTokenizer, BitsAndBytesConfig
 from tqdm import tqdm
 from typing import Optional
-from utils import vprint
+from utils import vprint, is_docker
 import os
 
 """
@@ -42,7 +44,7 @@ index_dir = "/media/CouncilEmbeddings"
 llm_model_name    = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 #TODO: refactor this to embedding_model_name
 embedding_model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
-embedding_dim = 384
+embedding_dim = 1024 # embedding dimension given by Ollama embedding
 model_dir  = "model"
 system_prompt = """Du bist ein intelligentes System, das deutsche Dokumente durchsucht und auf Basis der enthaltenen Informationen präzise Antworten auf gestellte Fragen gibt. Wenn du eine Antwort formulierst, gib die Antwort in klaren und präzisen Sätzen an und nenne dabei mindestens eine oder mehrere relevante Quellen im Format: (Quelle: Dokumentname, Abschnitt/Seite, Filename des TXT)."""
 
@@ -76,7 +78,13 @@ class Helper:
         """
         initialise the embedding model
         """
-        embedding_model = HuggingFaceEmbedding(model_name=self.embedding_model_name)
+        # embedding_model = HuggingFaceEmbedding(model_name=self.embedding_model_name)
+        base_url = "http://hca-ollama-cpu:11434" if is_docker() else "http://localhost:11434"
+        embedding_model = OllamaEmbedding(
+            model_name="mxbai-embed-large",
+            base_url=base_url,
+            ollama_additional_kwargs={"prostatic": 0},
+        )
         if embedding_model:
             vprint(f"Embedding model '{embedding_model.model_name}' initialized.", self.config)
         return embedding_model
@@ -303,7 +311,12 @@ class Query:
         storage_context = self.helper.get_storage_context()
         self.huggingface_login()
         embed_model = self.helper.initialize_embedding_model()
-        llm_model = self._init_llm_model()
+        # llm_model = self._init_llm_model()
+        base_url = "http://hca-ollama-cpu:11434" if is_docker() else "http://localhost:11434"
+        llm_model = Ollama(
+            model="llama3.2",
+            base_url=base_url,
+            request_timeout=600.0)
         Settings.llm = llm_model
         # Settings.tokenizer = tokenizer
         Settings.embed_model = embed_model

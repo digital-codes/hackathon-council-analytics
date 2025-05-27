@@ -1,10 +1,18 @@
 import requests
-import pymupdf
+import os
 import pprint
-from multiprocessing import Pool
 from importlib import import_module
 from typing import Optional
 from utils import vprint
+
+from docling.datamodel.base_models import InputFormat
+from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.datamodel.pipeline_options import (
+    AcceleratorDevice,
+    AcceleratorOptions,
+    PdfPipelineOptions,
+)
+
 """
 This Module provides classes for preprocessing
 
@@ -53,6 +61,11 @@ class Preprocessor:
         _filestorage = config.get('documents',{}).get('storage') or filestorage
         fsm = import_module(f"storage.{_filestorage}")
         self.fs         = fsm.FileStorage(config=config, secrets=secrets)
+        
+        try:
+            self.path = config['documents']['filestorage']['path']
+        except KeyError:
+            raise Exception("A path configuration is required")
 
     def show_config(self) -> str:
         """
@@ -96,12 +109,26 @@ class Preprocessor:
         Process the PDF by downloading from source, uploading to Storage, extracting text, and uploading the text file to Storage.
         """
 
+        pipeline_options = PdfPipelineOptions()
+        pipeline_options.do_ocr = True
+        pipeline_options.do_table_structure = True
+        pipeline_options.table_structure_options.do_cell_matching = True
+        pipeline_options.ocr_options.lang = ["de"]
+        pipeline_options.accelerator_options = AcceleratorOptions(
+            num_threads=4, device=AcceleratorDevice.AUTO
+        )
+
         pdf_content = self.get_pdf(idx)
 
         if pdf_content:
-            doc = pymupdf.open(stream=pdf_content, filetype="pdf")  # Extract text from the downloaded PDF
-            text = self.extract_text(doc)
-            text_filename = f"{idx}.txt"  # Save the extracted text to a local file
+            doc_converter = DocumentConverter(
+                format_options={
+                    InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
+                }
+            )
+            conv_result = doc_converter.convert(os.path.join(self.path, f"{idx}.pdf"))
+            text = conv_result.document.export_to_markdown()
+            text_filename = f"{idx}.md"  # Save the extracted text to a local file
             self.fs.put_on_storage(text_filename, text, content_type="text")
             vprint(f"Text extracted and saved as {text_filename}", self.config)
             return True

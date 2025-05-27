@@ -20,12 +20,14 @@ def retrieve(config: str, secrets: str, user_query: str) -> None:
     rag_llm = RagLlm(config=config, secrets=secrets)
     result = rag_llm.retrieve_docs(user_query)
     print(result)
+    return result
     
 def query(config: str, secrets: str, user_query: str) -> None:
     vprint('query got called', config)                               
     rag_llm = RagLlm(config=config, secrets=secrets)                     
     result = rag_llm.run_query(user_query)                                
     print(result)
+    return result
 
 def read_config(configfile: str) -> dict:
     try:
