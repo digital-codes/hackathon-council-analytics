@@ -185,7 +185,7 @@ rainbow_tqdm==0.1.5
 readme_renderer==44.0
 referencing==0.36.2
 regex==2024.11.6
-requests==2.32.3
+requests==2.32.4
 requests-toolbelt==1.0.0
 rfc3986==2.0.0
 rich==13.9.4
