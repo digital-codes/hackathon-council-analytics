@@ -46,7 +46,7 @@ llm_model_name    = "meta-llama/Meta-Llama-3.1-8B-Instruct"
 embedding_model_name = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
 embedding_dim = 1024 # embedding dimension given by Ollama embedding
 model_dir  = "model"
-system_prompt = """Du bist ein intelligentes System, das deutsche Dokumente durchsucht und auf Basis der enthaltenen Informationen präzise Antworten auf gestellte Fragen gibt. Wenn du eine Antwort formulierst, gib die Antwort in klaren und präzisen Sätzen an und nenne dabei mindestens eine oder mehrere relevante Quellen im Format: (Quelle: Dokumentname, Abschnitt/Seite, Filename des TXT)."""
+system_prompt = """Du bist ein intelligentes System, das deutsche Dokumente durchsucht und auf Basis der enthaltenen Informationen präzise Antworten auf gestellte Fragen gibt. Wenn du eine Antwort formulierst, gib die Antwort in klaren und präzisen Sätzen an. Nutze dabei das Markdown Format und nenne dabei alle benutzten Quellen mit URL Link im Markdown Format: [Filename](URL). Achte darauf, dass die Antwort auf die Frage eingeht und alle relevanten Informationen aus den Dokumenten berücksichtigt."""
 
 
 # TODO: this is named index_dir in query.py
@@ -74,6 +74,7 @@ class Helper:
         self.index_dir = config.get('embedding', {}).get('faiss',{}).get('index_dir') or index_dir
         self.faiss_index_path = os.path.join(self.index_dir, "faiss_index.idx")
 
+
     def initialize_embedding_model(self):
         """
         initialise the embedding model
@@ -89,9 +90,11 @@ class Helper:
             vprint(f"Embedding model '{embedding_model.model_name}' initialized.", self.config)
         return embedding_model
 
+
     def init_faiss_index(self) -> faiss.IndexFlatL2:
         faiss_index = faiss.IndexFlatL2(self.embedding_dim)
         return faiss_index
+
 
     def get_faiss_index(self) -> faiss.IndexFlatL2:
         """
@@ -101,6 +104,7 @@ class Helper:
         faiss_index = faiss.read_index(self.faiss_index_path)
         vprint(f"Loaded FAISS index with {faiss_index.ntotal} vectors.", self.config)
         return faiss_index
+
 
     def init_vector_store(self) -> FaissVectorStore:
         faiss_index = self.init_faiss_index()
@@ -115,6 +119,7 @@ class Helper:
         faiss_store = FaissVectorStore.from_persist_dir(self.index_dir)
         return faiss_store
 
+
     def init_storage_context(self):
         faiss_store = self.init_vector_store()
         storage_context = StorageContext.from_defaults(vector_store=faiss_store)
@@ -125,7 +130,6 @@ class Helper:
         faiss_store = self.get_vector_store()
         storage_context = StorageContext.from_defaults(vector_store=faiss_store, persist_dir=self.index_dir)
         return storage_context
-
 
 
 class Embedor:
@@ -145,8 +149,6 @@ class Embedor:
         self.metadata_path = os.path.join(self.index_dir, "document_metadata.pkl")
 
 
-
-
     def embed(self, start_idx: Optional[int] = None, end_idx: Optional[int] = None) -> int:
         """
         This function is called from the admin interface
@@ -154,6 +156,7 @@ class Embedor:
         documents = self.fs.get_documents(start_idx, end_idx)
         index = self.embed_and_index_documents(documents)
         return len(index.ref_doc_info)
+
 
     def update_faiss_index(self, start_idx: int, end_idx: int) -> int:
         """
@@ -169,6 +172,7 @@ class Embedor:
         else:
             vprint("No new documents found.", self.config)
         return len(document_metadata)
+
 
     def embed_and_index_documents(self,
                                   documents: list,
@@ -207,11 +211,12 @@ class Embedor:
             vprint(f"Total documents in metadata: {len(document_metadata)}", self.config)
         return index
 
+
     def build_llama_documents(self,documents: list) -> list:
         llama_documents = []
         for document in documents:
             doc = Document(text=document['text'],
-                           metadata={"filename": document['filename']})
+                           metadata={"filename": document['filename'], "url": document['url']})
             llama_documents.append(doc)
         return llama_documents
 
@@ -228,12 +233,14 @@ class Embedor:
 
         return document_metadata
 
+
     def save_index_and_metadata(self, faiss_index, document_metadata):
         """Save the FAISS index and document metadata."""
         faiss.write_index(faiss_index, self.faiss_index_path)
         with open(self.metadata_path , "wb") as f:
             pickle.dump(document_metadata, f)
         vprint(f"Saved FAISS index and metadata for {len(document_metadata)} documents.",self.config)
+
 
 class Query:
     """
@@ -255,6 +262,7 @@ class Query:
         self.model_dir = config.get('model', {}).get('llamastack',{}).get('model_dir') or model_dir
         self.system_prompt = config.get('query', {}).get('system_prompt') or system_prompt
         self.query_engine = None
+
 
     def _init_llm_model(self):
         tokenizer = AutoTokenizer.from_pretrained(self.llm_model_name, token=self.token)
@@ -301,11 +309,13 @@ class Query:
         structs = storage_context.index_store.index_structs()
         return structs
 
+
     def huggingface_login(self):
         res = login(token=self.token)
         #Todo: test res, not just assume login was successful
         vprint("Logged in successfully to Huggingface!",self.config)
         return res
+
 
     def get_vector_store_index(self):
         storage_context = self.helper.get_storage_context()
@@ -326,11 +336,13 @@ class Query:
             vprint(f"Number of nodes in index: {len(vector_store_index.ref_doc_info)}", self.config)
         return vector_store_index
 
+
     def report_status(self):
         vector_store = self.helper.get_vector_store()
         index = self.get_vector_store_index()
         print(f"Vectors in FAISS index: {vector_store._faiss_index.ntotal}")
         print(f"Documents in Vector Store Index: {len(index.ref_doc_info)}")
+
 
     def _configure_query_engine(self) -> RetrieverQueryEngine:
         index = self.get_vector_store_index()
@@ -361,6 +373,7 @@ class Query:
 
         return query_engine
 
+
     def query_rag_llm(self, user_query):
         # Function to interact with the query engine and return a response
         if not self.query_engine:
@@ -369,6 +382,7 @@ class Query:
             response = self.query_engine.query(user_query)
         torch.cuda.empty_cache()
         return str(response)
+
 
     def retrieve_docs(self, user_query) -> list[str]:
         """Retrieve relevant documents supporting the user query from the RAG query engine."""
