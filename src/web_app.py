@@ -8,9 +8,10 @@ import toml
 
 # Define Defaults
 DOCKER_CONFIGDIR = "/config"
+DOCKER_CONFIGDIR = "/root/.config/hca/"
 
 if len(sys.argv) >= 2:
-    configdir = sys.argv[1]
+    configdir = os.path.expanduser('~')
 else:
     configdir = DOCKER_CONFIGDIR
 
@@ -36,6 +37,7 @@ def read_config(configfile: str) -> dict:
         config = tomllib.load(f)
     return config
 
+print(f"Using config directory: {configdir}")
 config = read_config(os.path.join(configdir, 'config.toml'))
 secrets = read_config(os.path.join(configdir, 'secrets.toml'))
 
@@ -110,7 +112,6 @@ if page == "Chat":
     if st.button(st_get_response):
         if user_input:
             response = rag_llm.run_query(user_input)
-
 
             st.markdown(st_chbt_response)
             st.success(response)
