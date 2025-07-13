@@ -51,7 +51,7 @@ def download(config: dict, secrets: dict,start_id: int, end_id: Optional[int] = 
 
 def preprocess(config: dict, secrets: dict, start_id: int, end_id: Optional[int] = None) -> None:
     """
-    Download and preprocesses the pdfs and saves them to the configures File Storage
+    Preprocesses the pdfs and saves them to the configured File Storage
     Parameters:
         start_id (int): The start id of the pdfs to preprocess
         end_id (int): The end id of the pdfs to preprocess 
