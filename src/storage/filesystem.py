@@ -24,7 +24,10 @@ class FileStorage:
             self.path = config['documents']['filestorage']['path']
         except KeyError:
             raise Exception("A path configuration is required")
+        self.source_url = config.get('source',{}).get('url') or None
+
         self.config = config
+
 
     def read_from_storage(self,filename):
         """
@@ -41,6 +44,7 @@ class FileStorage:
         else:
             with open(file, readtype) as f:
                 return f.read()
+
 
     def get_documents(self,
                       start_idx: Optional[int] = None,
@@ -62,20 +66,24 @@ class FileStorage:
             if not end_idx:
                 end_idx = start_idx
             filelist = []
+            urllist = []
             for idx in range(start_idx, end_idx + 1):
                 filename = f"{idx}.md"
                 filelist.append(filename)
+                url = f"{self.source_url}?id={idx}&type=do"
+                urllist.append(url)
         elif not filelist and not start_idx:
-            filelist = self.get_txt_files()
-        for filename in filelist:
+            filelist, urllist = self.get_txt_files()
+        for filename, url in zip(filelist, urllist):
             if exclude_filenames and filename in exclude_filenames:
                 continue
             content = self.read_from_storage(filename)
             if content:
-                documents.append({'text': content, "filename": filename})
+                documents.append({'text': content, "filename": filename, "url": url})
             else:
                 vprint(f"{filename} not found or empty", self.config)
         return documents
+
 
     def get_txt_files(self) -> list:
         """
@@ -83,10 +91,12 @@ class FileStorage:
         returns a list of file path
         """
         files = []
+        urls = []
         for filename in os.listdir(self.path):
             if filename.endswith(".md"):
                 files.append(os.path.join(self.path, filename))
-        return files
+                urls.append(f"{self.source_url}?id={filename[:-3]}&type=do")
+        return files, urls
 
 
     def put_on_storage(self, filename, content, content_type="binary") -> bool:
