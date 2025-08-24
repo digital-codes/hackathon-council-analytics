@@ -129,13 +129,13 @@ class Preprocessor:
         pipeline_options.table_structure_options.do_cell_matching = True
         pipeline_options.ocr_options.lang = ["de"]
         pipeline_options.accelerator_options = AcceleratorOptions(
-            num_threads=4, device=AcceleratorDevice.AUTO
+            num_threads=1, device=AcceleratorDevice.AUTO
         )
 
         pdf_content = self.get_pdf(idx)
-        pdf_content = BytesIO(pdf_content)
 
-        if pdf_content:
+        if pdf_content is not None:
+            pdf_content = BytesIO(pdf_content)
             source = DocumentStream(name=f"{idx}.pdf", stream=pdf_content)
             doc_converter = DocumentConverter(
                 format_options={

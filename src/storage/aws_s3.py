@@ -93,7 +93,7 @@ class FileStorage:
 				filename = f"{idx}.md"
 				doc = self.read_from_storage(filename)
 				if doc:
-					documents.append({'text': doc, 'filename': filename})
+					documents.append({'text': doc, 'filename': filename, 'url': f'{self.config["source"]["url"]}?id={idx}&type=do'})
 		else:
 			if not filelist:
 				filelist = self.get_txt_files()
@@ -102,8 +102,8 @@ class FileStorage:
 					continue
 				doc = self.read_from_storage(filename)
 				if doc:
-					documents.append({'text': doc, 'filename': filename})
-		
+					documents.append({'text': doc, 'filename': filename, 'url': f'{self.config["source"]["url"]}?id={filename.replace(".md", "")}&type=do'})
+
 		return documents
 	
 
