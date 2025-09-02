@@ -1,6 +1,7 @@
 import requests
 import os
 import pprint
+from io import BytesIO
 from multiprocessing import Pool
 from urllib3.util.retry import Retry
 from requests.adapters import HTTPAdapter
@@ -8,7 +9,7 @@ from importlib import import_module
 from typing import Optional
 from utils import vprint
 
-from docling.datamodel.base_models import InputFormat
+from docling.datamodel.base_models import InputFormat, DocumentStream
 from docling.document_converter import DocumentConverter, PdfFormatOption
 from docling.datamodel.pipeline_options import (
     AcceleratorDevice,
@@ -64,11 +65,6 @@ class Preprocessor:
         _filestorage = config.get('documents',{}).get('storage') or filestorage
         fsm = import_module(f"storage.{_filestorage}")
         self.fs         = fsm.FileStorage(config=config, secrets=secrets)
-        
-        try:
-            self.path = config['documents']['filestorage']['path']
-        except KeyError:
-            raise Exception("A path configuration is required")
 
         # Setup a session with Keep-Alive and retry policy
         self.session = requests.Session()
@@ -133,18 +129,20 @@ class Preprocessor:
         pipeline_options.table_structure_options.do_cell_matching = True
         pipeline_options.ocr_options.lang = ["de"]
         pipeline_options.accelerator_options = AcceleratorOptions(
-            num_threads=4, device=AcceleratorDevice.AUTO
+            num_threads=1, device=AcceleratorDevice.AUTO
         )
 
         pdf_content = self.get_pdf(idx)
 
-        if pdf_content:
+        if pdf_content is not None:
+            pdf_content = BytesIO(pdf_content)
+            source = DocumentStream(name=f"{idx}.pdf", stream=pdf_content)
             doc_converter = DocumentConverter(
                 format_options={
                     InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)
                 }
             )
-            conv_result = doc_converter.convert(os.path.join(self.path, f"{idx}.pdf"))
+            conv_result = doc_converter.convert(source)
             text = conv_result.document.export_to_markdown()
             text_filename = f"{idx}.md"  # Save the extracted text to a local file
             self.fs.put_on_storage(text_filename, text, content_type="text")

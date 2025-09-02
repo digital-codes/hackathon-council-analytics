@@ -45,13 +45,17 @@ def download(config: dict, secrets: dict,start_id: int, end_id: Optional[int] = 
         #with Pool(processes=1) as p:
         #    results = list(tqdm(p.imap(pp.download_pdf, args_list), total=len(args_list)))
         #print("Process completed.")
+        num_docs = 0
         for idx in tqdm(range(start_id, end_id + 1), desc="Loading documents", unit="docs"):
-             pp.download_pdf(idx)
+            pdf_content = pp.download_pdf(idx)
+            num_docs = num_docs + 1 if pdf_content is not None else num_docs
+
+    vprint(f"Dowload finished with {num_docs} new documents downloaded", config)
             
 
 def preprocess(config: dict, secrets: dict, start_id: int, end_id: Optional[int] = None) -> None:
     """
-    Download and preprocesses the pdfs and saves them to the configures File Storage
+    Preprocesses the pdfs and saves them to the configured File Storage
     Parameters:
         start_id (int): The start id of the pdfs to preprocess
         end_id (int): The end id of the pdfs to preprocess 
