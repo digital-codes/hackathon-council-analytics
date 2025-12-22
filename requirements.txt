@@ -109,7 +109,7 @@ llama-parse==0.6.1
 lm-format-enforcer==0.10.10
 markdown-it-py==3.0.0
 MarkupSafe==3.0.2
-marshmallow==3.26.1
+marshmallow==3.26.2
 mdurl==0.1.2
 monotonic==1.6
 more-itertools==10.6.0
