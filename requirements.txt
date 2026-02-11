@@ -150,7 +150,7 @@ orjson==3.10.15
 packaging==24.2
 pandas==2.2.3
 pathspec==0.12.1
-pillow==11.1.0
+pillow==12.1.1
 pkginfo==1.10.0
 platformdirs==4.3.7
 pluggy==1.5.0
